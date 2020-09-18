@@ -13,7 +13,7 @@ applicationContext.xml
 	<property name="basePath" value="/WEB-INF/views/" />
 </bean>
 
-<bean id="pugConfiguration" class="de.neuland.pug4j.JadeConfiguration">
+<bean id="pugConfiguration" class="de.neuland.pug4j.PugConfiguration">
 	<property name="prettyPrint" value="false" />
 	<property name="caching" value="false" />
 	<property name="templateLoader" ref="templateLoader" />
