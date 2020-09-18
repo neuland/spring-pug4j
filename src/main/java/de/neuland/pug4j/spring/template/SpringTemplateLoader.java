@@ -18,7 +18,7 @@ public class SpringTemplateLoader implements TemplateLoader, ServletContextAware
 
 	private ResourceLoader resourceLoader;
 	private String encoding = "UTF-8";
-	private String suffix = ".jade";
+	private String suffix = ".pug";
 	private String basePath = "";
 	private ServletContext context;
 

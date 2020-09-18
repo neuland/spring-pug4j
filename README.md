@@ -41,7 +41,7 @@ public class PugConfig {
 	}
 
 	@Bean
-	public PugConfiguration jadeConfiguration() {
+	public PugConfiguration pugConfiguration() {
 		PugConfiguration configuration = new PugConfiguration();
 		configuration.setCaching(false);
 		configuration.setTemplateLoader(templateLoader());
