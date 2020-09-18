@@ -1,8 +1,8 @@
-[![Build Status](https://secure.travis-ci.org/neuland/spring-jade4j.png?branch=master)](http://travis-ci.org/neuland/spring-jade4j)
+[![Build Status](https://secure.travis-ci.org/neuland/spring-pug4j.png?branch=master)](http://travis-ci.org/neuland/spring-pug4j)
 
 # A Spring Integration for Pug4J (formerly known as Jade4J)
 
-See [neuland/jade4j](https://github.com/neuland/jade4j) for more information.
+See [neuland/pug4j](https://github.com/neuland/pug4j) for more information.
 
 ## Bean Declarations
 
