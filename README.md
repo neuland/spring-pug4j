@@ -34,7 +34,7 @@ public class PugConfig {
 	@Bean
 	public SpringTemplateLoader templateLoader() {
 		SpringTemplateLoader templateLoader = new SpringTemplateLoader();
-		templateLoader.setBasePath("/WEB-INF/views/");
+		templateLoader.setTemplateLoaderPath("/WEB-INF/views/");
 		templateLoader.setEncoding("UTF-8");
 		templateLoader.setSuffix(".pug");
 		return templateLoader;
@@ -71,7 +71,7 @@ Just add following dependency definitions to your `pom.xml`.
 <dependency>
   <groupId>de.neuland-bfi</groupId>
   <artifactId>spring-pug4j</artifactId>
-  <version>2.0.0-alpha-1</version>
+  <version>2.0.0-alpha-2</version>
 </dependency>
 ```
 

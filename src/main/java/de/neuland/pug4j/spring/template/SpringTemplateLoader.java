@@ -3,40 +3,23 @@ package de.neuland.pug4j.spring.template;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.file.Paths;
 
 import de.neuland.pug4j.template.TemplateLoader;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.apache.commons.io.FilenameUtils;
 
-import javax.annotation.PostConstruct;
-import javax.servlet.ServletContext;
-import org.springframework.web.context.ServletContextAware;
-import org.springframework.web.context.support.ServletContextResourceLoader;
-
-public class SpringTemplateLoader implements TemplateLoader, ServletContextAware {
+public class SpringTemplateLoader implements TemplateLoader, ResourceLoaderAware {
 
 	private ResourceLoader resourceLoader;
 	private String encoding = "UTF-8";
 	private String suffix = ".pug";
-	private String basePath = "";
-	private ServletContext context;
+	private String templateLoaderPath = "";
+	private String base = "";
 
-	@PostConstruct
-	public void init() {
-		if(this.resourceLoader == null) {
-			this.resourceLoader = new ServletContextResourceLoader(context);
-		}
-	}
-
-	@Override
-	public void setServletContext(ServletContext servletContext) {
-		this.context = servletContext;
-	}
-
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
-	}
 
 	@Override
 	public long getLastModified(String name) {
@@ -60,11 +43,21 @@ public class SpringTemplateLoader implements TemplateLoader, ServletContextAware
 	}
 
 	private Resource getResource(String name) {
-		String resourceName = basePath + name;
+		String resourceName = getResourceName(name);
         if (hasNoExtension(resourceName)) {
 			resourceName += suffix;
 		}
 		return this.resourceLoader.getResource(resourceName);
+	}
+
+	private String getResourceName(String name){
+		if(!StringUtils.isBlank(templateLoaderPath))
+			if(Paths.get(name).isAbsolute()) {
+				return Paths.get(templateLoaderPath+ base +name.substring(1)).toString();
+			}else
+				return Paths.get(templateLoaderPath).resolve(name).toString();
+		else
+			return name;
 	}
 
     private boolean hasNoExtension(String filename) {
@@ -87,12 +80,23 @@ public class SpringTemplateLoader implements TemplateLoader, ServletContextAware
 		this.suffix = suffix;
 	}
 
-	public String getBasePath() {
-		return basePath;
+	public String getBase() {
+		return base;
 	}
 
-	public void setBasePath(String basePath) {
-		this.basePath = basePath;
+	public void setBase(String base) {
+		this.base = base;
 	}
 
+	public void setTemplateLoaderPath(String templateLoaderPath) {
+		if(templateLoaderPath.endsWith("/"))
+			this.templateLoaderPath = templateLoaderPath;
+		else
+			this.templateLoaderPath = templateLoaderPath+"/";
+	}
+
+	@Override
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
 }

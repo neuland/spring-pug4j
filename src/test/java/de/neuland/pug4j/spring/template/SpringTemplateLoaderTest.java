@@ -1,8 +1,10 @@
 package de.neuland.pug4j.spring.template;
 
 import org.junit.Test;
+import org.springframework.core.io.ResourceLoader;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class SpringTemplateLoaderTest {
     @Test
