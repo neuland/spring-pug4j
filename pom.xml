@@ -6,7 +6,7 @@
     <version>2.0.0-alpha-3-SNAPSHOT</version>
     <packaging>jar</packaging>
 	<name>spring-pug4j</name>
-	<description>Spring interface to the Pug4J compiler (formerly known as Jade4J)</description>
+	<description>Spring interface to the Pug4J compiler (formerly known as spring-jade4j)</description>
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>

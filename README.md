@@ -10,7 +10,7 @@ applicationContext.xml
 
 ```xml
 <bean id="templateLoader" class="de.neuland.pug4j.spring.template.SpringTemplateLoader">
-	<property name="basePath" value="/WEB-INF/views/" />
+	<property name="templateLoaderPath" value="/WEB-INF/views/" />
 </bean>
 
 <bean id="pugConfiguration" class="de.neuland.pug4j.PugConfiguration">
@@ -60,10 +60,6 @@ public class PugConfig {
 ## Usage
 
 ### via Maven
-
-As of release 0.4.0 we changed maven hosting to sonatype. using Github Maven Repository is no longer required
-
-Please be aware that we had to change the group id from 'de.neuland' to 'de.neuland-bfi' in order to meet sonatype conventions for group naming.
 
 Just add following dependency definitions to your `pom.xml`.
 
