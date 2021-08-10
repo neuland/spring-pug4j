@@ -1,5 +1,8 @@
 target/
+.DS_Store
 .classpath
 .project
-.settings
+.settings/
+.idea
+*.iml
 release.properties
