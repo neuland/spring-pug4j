@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/neuland/spring-pug4j.png?branch=master)](http://travis-ci.org/neuland/spring-pug4j)
 
-# A Spring Integration for Pug4J (formerly known as Jade4J)
+# A Spring Integration for Pug4J
 
 See [neuland/pug4j](https://github.com/neuland/pug4j) for more information.
 
@@ -13,10 +13,14 @@ applicationContext.xml
 	<property name="templateLoaderPath" value="/WEB-INF/views/" />
 </bean>
 
+<bean id="expressionHandler" class="de.neuland.pug4j.expression.GraalJsExpressionHandler">
+</bean>
+
 <bean id="pugConfiguration" class="de.neuland.pug4j.PugConfiguration">
 	<property name="prettyPrint" value="false" />
 	<property name="caching" value="false" />
 	<property name="templateLoader" ref="templateLoader" />
+	<!--<property name="expressionHandler" ref="expressionHandler" />-->
 </bean>
 
 <bean id="viewResolver" class="de.neuland.pug4j.spring.view.PugViewResolver">
@@ -28,32 +32,36 @@ applicationContext.xml
 Or, if you are using Spring JavaConfig:
 
 ```java
+import de.neuland.pug4j.expression.GraalJsExpressionHandler;
+
 @Configuration
 public class PugConfig {
 
-	@Bean
-	public SpringTemplateLoader templateLoader() {
-		SpringTemplateLoader templateLoader = new SpringTemplateLoader();
-		templateLoader.setTemplateLoaderPath("/WEB-INF/views/");
-		templateLoader.setEncoding("UTF-8");
-		templateLoader.setSuffix(".pug");
-		return templateLoader;
-	}
+    @Bean
+    public SpringTemplateLoader templateLoader() {
+        SpringTemplateLoader templateLoader = new SpringTemplateLoader();
+        templateLoader.setTemplateLoaderPath("/WEB-INF/views/");
+        templateLoader.setEncoding("UTF-8");
+        templateLoader.setSuffix(".pug");
+        return templateLoader;
+    }
 
-	@Bean
-	public PugConfiguration pugConfiguration() {
-		PugConfiguration configuration = new PugConfiguration();
-		configuration.setCaching(false);
-		configuration.setTemplateLoader(templateLoader());
-		return configuration;
-	}
+    @Bean
+    public PugConfiguration pugConfiguration() {
+        PugConfiguration configuration = new PugConfiguration();
+        configuration.setCaching(false);
+        configuration.setTemplateLoader(templateLoader());
+        //To use the new GraalJsExpressionHandler add this:
+        //configuration.setExpressionHandler(new GraalJsExpressionHandler());
+        return configuration;
+    }
 
-	@Bean
-	public ViewResolver viewResolver() {
-		PugViewResolver viewResolver = new PugViewResolver();
-		viewResolver.setConfiguration(pugConfiguration());
-		return viewResolver;
-	}
+    @Bean
+    public ViewResolver viewResolver() {
+        PugViewResolver viewResolver = new PugViewResolver();
+        viewResolver.setConfiguration(pugConfiguration());
+        return viewResolver;
+    }
 }
 ```
 
@@ -67,7 +75,7 @@ Just add following dependency definitions to your `pom.xml`.
 <dependency>
   <groupId>de.neuland-bfi</groupId>
   <artifactId>spring-pug4j</artifactId>
-  <version>2.0.0-beta-1</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 
