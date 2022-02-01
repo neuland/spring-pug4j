@@ -1,5 +1,6 @@
 package de.neuland.pug4j.spring.template;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -33,7 +34,7 @@ public class SpringTemplateLoader implements TemplateLoader, ResourceLoaderAware
 
 	@Override
 	public Reader getReader(String name) throws IOException {
-		name = FilenameUtils.separatorsToUnix(name);
+		name = FilenameUtils.separatorsToSystem(name);
 		Resource resource = getResource(name);
 		return new InputStreamReader(resource.getInputStream(), encoding);
 	}
@@ -53,7 +54,7 @@ public class SpringTemplateLoader implements TemplateLoader, ResourceLoaderAware
 
 	private String getResourceName(String name) {
 		if (!StringUtils.isBlank(templateLoaderPath)){
-			if (name.startsWith("/")) {
+			if (name.startsWith(File.separator)) {
 				return Paths.get(templateLoaderPath, basePath ,name).toString();
 			} else {
 				return Paths.get(templateLoaderPath).resolve(name).normalize().toString();
@@ -84,12 +85,12 @@ public class SpringTemplateLoader implements TemplateLoader, ResourceLoaderAware
 	}
 
 	public void setBase(String basePath) {
-		basePath = FilenameUtils.separatorsToUnix(basePath);
+		basePath = FilenameUtils.separatorsToSystem(basePath);
 		this.basePath = basePath;
 	}
 
 	public void setTemplateLoaderPath(String templateLoaderPath) {
-		templateLoaderPath = FilenameUtils.separatorsToUnix(templateLoaderPath);
+		templateLoaderPath = FilenameUtils.separatorsToSystem(templateLoaderPath);
 		this.templateLoaderPath = templateLoaderPath;
 	}
 
