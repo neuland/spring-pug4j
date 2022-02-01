@@ -18,7 +18,7 @@ public class SpringTemplateLoader implements TemplateLoader, ResourceLoaderAware
 	private String encoding = "UTF-8";
 	private String suffix = ".pug";
 	private String templateLoaderPath = "";
-	private String base = "";
+	private String basePath = "";
 
 
 	@Override
@@ -33,6 +33,7 @@ public class SpringTemplateLoader implements TemplateLoader, ResourceLoaderAware
 
 	@Override
 	public Reader getReader(String name) throws IOException {
+		name = FilenameUtils.separatorsToUnix(name);
 		Resource resource = getResource(name);
 		return new InputStreamReader(resource.getInputStream(), encoding);
 	}
@@ -50,14 +51,16 @@ public class SpringTemplateLoader implements TemplateLoader, ResourceLoaderAware
 		return this.resourceLoader.getResource(resourceName);
 	}
 
-	private String getResourceName(String name){
-		if(!StringUtils.isBlank(templateLoaderPath))
-			if(Paths.get(name).isAbsolute()) {
-				return Paths.get(templateLoaderPath+ base +name.substring(1)).toString();
-			}else
-				return Paths.get(templateLoaderPath).resolve(name).toString();
-		else
+	private String getResourceName(String name) {
+		if (!StringUtils.isBlank(templateLoaderPath)){
+			if (name.startsWith("/")) {
+				return Paths.get(templateLoaderPath, basePath ,name).toString();
+			} else {
+				return Paths.get(templateLoaderPath).resolve(name).normalize().toString();
+			}
+		} else {
 			return name;
+		}
 	}
 
     private boolean hasNoExtension(String filename) {
@@ -72,27 +75,22 @@ public class SpringTemplateLoader implements TemplateLoader, ResourceLoaderAware
 		this.encoding = encoding;
 	}
 
-	public String getSuffix() {
-		return suffix;
-	}
-
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
 	}
 
 	public String getBase() {
-		return base;
+		return basePath;
 	}
 
-	public void setBase(String base) {
-		this.base = base;
+	public void setBase(String basePath) {
+		basePath = FilenameUtils.separatorsToUnix(basePath);
+		this.basePath = basePath;
 	}
 
 	public void setTemplateLoaderPath(String templateLoaderPath) {
-		if(templateLoaderPath.endsWith("/"))
-			this.templateLoaderPath = templateLoaderPath;
-		else
-			this.templateLoaderPath = templateLoaderPath+"/";
+		templateLoaderPath = FilenameUtils.separatorsToUnix(templateLoaderPath);
+		this.templateLoaderPath = templateLoaderPath;
 	}
 
 	@Override
