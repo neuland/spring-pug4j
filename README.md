@@ -1,4 +1,4 @@
-[![Test Status](https://github.com/neuland/spring-pug4j/actions/workflows/test.yaml/badge.svg)](https://github.com/neuland/spring-pug4j/)
+[![Test Status](https://github.com/neuland/spring-pug4j/actions/workflows/test.yaml/badge.svg)](https://github.com/neuland/spring-pug4j/actions)
 
 # A Spring Integration for Pug4J
 
