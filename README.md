@@ -1,4 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/neuland/spring-pug4j.png?branch=master)](http://travis-ci.org/neuland/spring-pug4j)
+[![Test Status](https://github.com/neuland/spring-pug4j/actions/workflows/test.yaml/badge.svg)](https://github.com/neuland/spring-pug4j/)
 
 # A Spring Integration for Pug4J
 
@@ -10,7 +10,7 @@ applicationContext.xml
 
 ```xml
 <bean id="templateLoader" class="de.neuland.pug4j.spring.template.SpringTemplateLoader">
-	<property name="templateLoaderPath" value="/WEB-INF/views/" />
+	<property name="templateLoaderPath" value="classpath:/templates" />
 </bean>
 
 <bean id="expressionHandler" class="de.neuland.pug4j.expression.GraalJsExpressionHandler">
@@ -40,7 +40,7 @@ public class PugConfig {
     @Bean
     public SpringTemplateLoader templateLoader() {
         SpringTemplateLoader templateLoader = new SpringTemplateLoader();
-        templateLoader.setTemplateLoaderPath("/WEB-INF/views/");
+        templateLoader.setTemplateLoaderPath("classpath:/templates");
         templateLoader.setEncoding("UTF-8");
         templateLoader.setSuffix(".pug");
         return templateLoader;
@@ -64,6 +64,10 @@ public class PugConfig {
     }
 }
 ```
+### TemplateLoaderPath
+SpringTemplateLoader uses the ResourceLoader of the Spring Framework. For more information how to configure the templateLoaderPath see [ResourceLoader](https://docs.spring.io/spring-framework/docs/3.2.x/spring-framework-reference/html/resources.html#resources-resourceloader)
+
+Most people use something like 'classpath:/templates' which points to a templates folder in your resources.
 
 ## Usage
 
@@ -75,7 +79,7 @@ Just add following dependency definitions to your `pom.xml`.
 <dependency>
   <groupId>de.neuland-bfi</groupId>
   <artifactId>spring-pug4j</artifactId>
-  <version>2.0.4</version>
+  <version>2.0.5</version>
 </dependency>
 ```
 
@@ -89,7 +93,7 @@ Just add following dependency definitions to your `pom.xml`.
 
 The MIT License
 
-Copyright (C) 2012-2021 [neuland Büro für Informatik](http://www.neuland-bfi.de/), Bremen, Germany
+Copyright (C) 2012-2022 [neuland Büro für Informatik](http://www.neuland-bfi.de/), Bremen, Germany
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
