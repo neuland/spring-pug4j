@@ -34,7 +34,6 @@ public class SpringTemplateLoader implements TemplateLoader, ResourceLoaderAware
 
 	@Override
 	public Reader getReader(String name) throws IOException {
-		name = FilenameUtils.separatorsToSystem(name);
 		Resource resource = getResource(name);
 		return new InputStreamReader(resource.getInputStream(), encoding);
 	}
@@ -53,11 +52,12 @@ public class SpringTemplateLoader implements TemplateLoader, ResourceLoaderAware
 	}
 
 	private String getResourceName(String name) {
+		name = FilenameUtils.separatorsToUnix(name);
 		if (!StringUtils.isBlank(templateLoaderPath)){
-			if (name.startsWith(File.separator)) {
-				return Paths.get(templateLoaderPath, basePath ,name).toString();
+			if (name.startsWith("/")) {
+				return FilenameUtils.normalize(templateLoaderPath + basePath + name.substring(1));
 			} else {
-				return Paths.get(templateLoaderPath).resolve(name).normalize().toString();
+				return FilenameUtils.normalize(templateLoaderPath + name);
 			}
 		} else {
 			return name;
@@ -85,12 +85,16 @@ public class SpringTemplateLoader implements TemplateLoader, ResourceLoaderAware
 	}
 
 	public void setBase(String basePath) {
-		basePath = FilenameUtils.separatorsToSystem(basePath);
+		basePath = FilenameUtils.separatorsToUnix(basePath);
+		if(basePath!=null && !basePath.endsWith("/") && !basePath.equals(""))
+			basePath+="/";
 		this.basePath = basePath;
 	}
 
 	public void setTemplateLoaderPath(String templateLoaderPath) {
-		templateLoaderPath = FilenameUtils.separatorsToSystem(templateLoaderPath);
+		templateLoaderPath = FilenameUtils.separatorsToUnix(templateLoaderPath);
+		if(templateLoaderPath!=null && !templateLoaderPath.endsWith("/") && !templateLoaderPath.equals(""))
+			templateLoaderPath+="/";
 		this.templateLoaderPath = templateLoaderPath;
 	}
 
