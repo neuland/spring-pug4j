@@ -55,9 +55,9 @@ public class SpringTemplateLoader implements TemplateLoader, ResourceLoaderAware
 		name = FilenameUtils.separatorsToUnix(name);
 		if (!StringUtils.isBlank(templateLoaderPath)){
 			if (name.startsWith("/")) {
-				return FilenameUtils.normalize(templateLoaderPath + basePath + name.substring(1));
+				return FilenameUtils.normalize(templateLoaderPath + basePath + name.substring(1),true);
 			} else {
-				return FilenameUtils.normalize(templateLoaderPath + name);
+				return FilenameUtils.normalize(templateLoaderPath + name,true);
 			}
 		} else {
 			return name;
