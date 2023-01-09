@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
     <groupId>de.neuland-bfi</groupId>
 	<artifactId>spring-pug4j</artifactId>
-    <version>2.0.7-SNAPSHOT</version>
+    <version>3.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 	<name>spring-pug4j</name>
 	<description>Spring interface to the Pug4J compiler (formerly known as spring-jade4j)</description>
@@ -59,8 +59,8 @@
     </developers>
 
 	<properties>
-		<org.springframework.version>4.3.25.RELEASE</org.springframework.version>
-		<servlet-api-version>3.1.0</servlet-api-version>
+		<org.springframework.version>6.0.3</org.springframework.version>
+		<servlet-api-version>6.0.0</servlet-api-version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -168,9 +168,9 @@
 	</build>
 
 	<dependencies>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
             <version>${servlet-api-version}</version>
             <scope>provided</scope>
         </dependency>

@@ -69,6 +69,12 @@ SpringTemplateLoader uses the ResourceLoader of the Spring Framework. For more i
 
 Most people use something like 'classpath:/templates' which points to a templates folder in your resources.
 
+## Versions
+### 3.0.0
+* switch to jakarta servlet-api
+* support of spring framework 6
+* needs java 17
+
 ## Usage
 
 ### via Maven
@@ -79,7 +85,7 @@ Just add following dependency definitions to your `pom.xml`.
 <dependency>
   <groupId>de.neuland-bfi</groupId>
   <artifactId>spring-pug4j</artifactId>
-  <version>2.0.6</version>
+  <version>3.0.0</version>
 </dependency>
 ```
 
@@ -93,7 +99,7 @@ Just add following dependency definitions to your `pom.xml`.
 
 The MIT License
 
-Copyright (C) 2012-2022 [neuland Büro für Informatik](http://www.neuland-bfi.de/), Bremen, Germany
+Copyright (C) 2012-2023 [neuland Büro für Informatik](http://www.neuland-bfi.de/), Bremen, Germany
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
