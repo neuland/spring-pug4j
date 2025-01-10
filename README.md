@@ -13,14 +13,10 @@ applicationContext.xml
 	<property name="templateLoaderPath" value="classpath:/templates" />
 </bean>
 
-<bean id="expressionHandler" class="de.neuland.pug4j.expression.GraalJsExpressionHandler">
-</bean>
-
 <bean id="pugConfiguration" class="de.neuland.pug4j.PugConfiguration">
 	<property name="prettyPrint" value="false" />
 	<property name="caching" value="false" />
 	<property name="templateLoader" ref="templateLoader" />
-	<!--<property name="expressionHandler" ref="expressionHandler" />-->
 </bean>
 
 <bean id="viewResolver" class="de.neuland.pug4j.spring.view.PugViewResolver">
@@ -32,7 +28,6 @@ applicationContext.xml
 Or, if you are using Spring JavaConfig:
 
 ```java
-import de.neuland.pug4j.expression.GraalJsExpressionHandler;
 
 @Configuration
 public class PugConfig {
@@ -51,8 +46,6 @@ public class PugConfig {
         PugConfiguration configuration = new PugConfiguration();
         configuration.setCaching(false);
         configuration.setTemplateLoader(templateLoader());
-        //To use the new GraalJsExpressionHandler add this:
-        //configuration.setExpressionHandler(new GraalJsExpressionHandler());
         return configuration;
     }
 
@@ -79,7 +72,7 @@ Just add following dependency definitions to your `pom.xml`.
 <dependency>
   <groupId>de.neuland-bfi</groupId>
   <artifactId>spring-pug4j</artifactId>
-  <version>2.0.6</version>
+  <version>2.3.1</version>
 </dependency>
 ```
 
@@ -93,7 +86,7 @@ Just add following dependency definitions to your `pom.xml`.
 
 The MIT License
 
-Copyright (C) 2012-2022 [neuland Büro für Informatik](http://www.neuland-bfi.de/), Bremen, Germany
+Copyright (C) 2012-2025 [neuland Büro für Informatik](http://www.neuland-bfi.de/), Bremen, Germany
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
