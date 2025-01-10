@@ -13,14 +13,10 @@ applicationContext.xml
 	<property name="templateLoaderPath" value="classpath:/templates" />
 </bean>
 
-<bean id="expressionHandler" class="de.neuland.pug4j.expression.GraalJsExpressionHandler">
-</bean>
-
 <bean id="pugConfiguration" class="de.neuland.pug4j.PugConfiguration">
 	<property name="prettyPrint" value="false" />
 	<property name="caching" value="false" />
 	<property name="templateLoader" ref="templateLoader" />
-	<!--<property name="expressionHandler" ref="expressionHandler" />-->
 </bean>
 
 <bean id="viewResolver" class="de.neuland.pug4j.spring.view.PugViewResolver">
@@ -32,7 +28,6 @@ applicationContext.xml
 Or, if you are using Spring JavaConfig:
 
 ```java
-import de.neuland.pug4j.expression.GraalJsExpressionHandler;
 
 @Configuration
 public class PugConfig {
@@ -51,8 +46,6 @@ public class PugConfig {
         PugConfiguration configuration = new PugConfiguration();
         configuration.setCaching(false);
         configuration.setTemplateLoader(templateLoader());
-        //To use the new GraalJsExpressionHandler add this:
-        //configuration.setExpressionHandler(new GraalJsExpressionHandler());
         return configuration;
     }
 
@@ -89,7 +82,7 @@ Just add following dependency definitions to your `pom.xml`.
 <dependency>
   <groupId>de.neuland-bfi</groupId>
   <artifactId>spring-pug4j</artifactId>
-  <version>3.3.0</version>
+  <version>3.3.1</version>
 </dependency>
 ```
 

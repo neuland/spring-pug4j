@@ -68,14 +68,14 @@
         <commons-io.version>2.18.0</commons-io.version>
         <junit.version>4.13.2</junit.version>
         <mockito-core.version>5.6.0</mockito-core.version>
-        <pug4j.version>2.3.0</pug4j.version>
+        <pug4j.version>2.3.1</pug4j.version>
         <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
         <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
         <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
         <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
-        <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
+        <maven-deploy-plugin.version>3.1.3</maven-deploy-plugin.version>
     </properties>
 
     <profiles>
@@ -135,7 +135,9 @@
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <useFile>false</useFile>
+                    <useModulePath>false</useModulePath>
                     <trimStackTrace>false</trimStackTrace>
+                    <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
                 </configuration>
             </plugin>
             <plugin>
@@ -165,6 +167,26 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.0</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <!-- explicitly define maven-deploy-plugin after other to force exec order -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -179,8 +201,30 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
-    </build>
+            <plugin>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.3.2</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>3.1.3</version>
+            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-jar-plugin</artifactId>-->
+<!--                <version>3.4.2</version>-->
+<!--                <configuration>-->
+<!--                    <archive>-->
+<!--                        <manifestEntries>-->
+<!--                            &lt;!&ndash; For Java 11 Modules, specify a module name. Do not create module-info.java until all-->
+<!--                                 our dependencies specify a module name. &ndash;&gt;-->
+<!--                            <Automatic-Module-Name>de.neuland.pug4j.spring</Automatic-Module-Name>-->
+<!--                        </manifestEntries>-->
+<!--                    </archive>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
+		</plugins>
+	</build>
 
     <dependencies>
         <dependency>
@@ -230,12 +274,12 @@
             <version>${commons-io.version}</version>
         </dependency>
 
-        <!-- Other dependencies -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+		<!-- Other dependencies -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
             <version>${slf4j-api.version}</version>
-        </dependency>
+		</dependency>
 
         <!-- Test -->
         <dependency>
