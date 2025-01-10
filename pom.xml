@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.neuland-bfi</groupId>
     <artifactId>spring-pug4j</artifactId>
-    <version>3.3.1</version>
+    <version>3.3.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>spring-pug4j</name>
     <description>Spring interface to the Pug4J compiler (formerly known as spring-jade4j)</description>
@@ -32,7 +32,7 @@
         <url>https://github.com/neuland/spring-pug4j</url>
         <connection>scm:git:git://github.com/neuland/spring-pug4j.git</connection>
         <developerConnection>scm:git:git@github.com:neuland/spring-pug4j.git</developerConnection>
-        <tag>spring-pug4j-3.3.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
