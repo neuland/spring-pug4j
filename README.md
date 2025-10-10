@@ -82,7 +82,7 @@ Just add following dependency definitions to your `pom.xml`.
 <dependency>
   <groupId>de.neuland-bfi</groupId>
   <artifactId>spring-pug4j</artifactId>
-  <version>3.3.1</version>
+  <version>3.4.0</version>
 </dependency>
 ```
 
