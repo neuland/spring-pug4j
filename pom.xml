@@ -3,16 +3,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.neuland-bfi</groupId>
     <artifactId>spring-pug4j</artifactId>
-    <version>3.3.2-SNAPSHOT</version>
+    <version>3.4.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>spring-pug4j</name>
     <description>Spring interface to the Pug4J compiler (formerly known as spring-jade4j)</description>
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>9</version>
-    </parent>
-
     <url>https://github.com/neuland/spring-pug4j</url>
 
     <issueManagement>
@@ -58,6 +52,27 @@
         </developer>
     </developers>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>central</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>central</id>
+            <url>https://central.sonatype.com</url>
+        </repository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>central-portal-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <properties>
         <org.springframework.version>6.2.1</org.springframework.version>
         <servlet-api-version>6.0.0</servlet-api-version>
@@ -68,14 +83,18 @@
         <commons-io.version>2.18.0</commons-io.version>
         <junit.version>4.13.2</junit.version>
         <mockito-core.version>5.6.0</mockito-core.version>
-        <pug4j.version>2.3.1</pug4j.version>
-        <maven-gpg-plugin.version>3.1.0</maven-gpg-plugin.version>
-        <maven-release-plugin.version>3.0.1</maven-release-plugin.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
-        <maven-source-plugin.version>3.3.0</maven-source-plugin.version>
-        <maven-javadoc-plugin.version>3.6.0</maven-javadoc-plugin.version>
-        <maven-deploy-plugin.version>3.1.3</maven-deploy-plugin.version>
+        <pug4j.version>2.4.0</pug4j.version>
+        <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+        <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
+        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+        <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+        <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
+        <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
+        <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
+        <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
+        <central-publishing-maven-plugin.version>0.9.0</central-publishing-maven-plugin.version>
     </properties>
 
     <profiles>
@@ -118,7 +137,7 @@
                     <configuration>
                         <mavenExecutorId>forked-path</mavenExecutorId>
                         <useReleaseProfile>false</useReleaseProfile>
-                        <arguments>${arguments} -Psonatype-oss-release</arguments>
+                        <arguments>${arguments} -Prelease-sign-artifacts</arguments>
                     </configuration>
                 </plugin>
             </plugins>
@@ -169,7 +188,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>${maven-enforcer-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>enforce-maven</id>
@@ -203,11 +222,20 @@
             </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.3.2</version>
+                <version>${maven-clean-plugin.version}</version>
             </plugin>
             <plugin>
                 <artifactId>maven-install-plugin</artifactId>
-                <version>3.1.3</version>
+                <version>${maven-install-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>${central-publishing-maven-plugin.version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
             </plugin>
 <!--            <plugin>-->
 <!--                <groupId>org.apache.maven.plugins</groupId>-->
