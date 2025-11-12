@@ -1,12 +1,14 @@
 package de.neuland.pug4j.spring.view;
 
-import de.neuland.pug4j.PugConfiguration;
+import de.neuland.pug4j.PugEngine;
+import de.neuland.pug4j.RenderContext;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
 public class PugViewResolver extends AbstractTemplateViewResolver {
 
-	private PugConfiguration configuration;
+	private PugEngine engine;
+	private RenderContext renderContext;
 	private boolean renderExceptions = false;
 	private String contentType = "text/html;charset=UTF-8";
 
@@ -23,14 +25,27 @@ public class PugViewResolver extends AbstractTemplateViewResolver {
 	@Override
 	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
 		PugView view = (PugView) super.buildView(viewName);
-		view.setConfiguration(this.configuration);
+		view.setEngine(this.engine);
+		view.setRenderContext(this.renderContext);
 		view.setContentType(contentType);
 		view.setRenderExceptions(renderExceptions);
 		return view;
 	}
 
-	public void setConfiguration(PugConfiguration configuration) {
-		this.configuration = configuration;
+	public PugEngine getEngine() {
+		return engine;
+	}
+
+	public void setEngine(PugEngine engine) {
+		this.engine = engine;
+	}
+
+	public RenderContext getRenderContext() {
+		return renderContext;
+	}
+
+	public void setRenderContext(RenderContext renderContext) {
+		this.renderContext = renderContext;
 	}
 
 	public void setRenderExceptions(boolean renderExceptions) {

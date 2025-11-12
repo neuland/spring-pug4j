@@ -7,9 +7,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Spring-pug4j is a Spring Framework integration library for Pug4J (formerly Jade4J), providing Spring MVC view resolution for Pug templates. The library acts as a bridge between Spring's view resolution mechanism and the Pug templating engine.
 
 **Key Details:**
-- Current version: 3.3.2-SNAPSHOT
+- Current version: 4.0.0-SNAPSHOT
 - Requires Java 17+
 - Spring Framework 6.2+ (Jakarta EE with jakarta.servlet-api 6.0)
+- Pug4J 3.0.0+ (using new `PugEngine` and `RenderContext` APIs)
 - Build tool: Maven
 - Testing: JUnit 4, Mockito
 
@@ -62,15 +63,17 @@ The library consists of three core components that integrate Spring MVC with Pug
 - Registers itself as a view resolver in Spring MVC's view resolution chain
 - Creates `PugView` instances for resolved view names
 - Configures each view with:
-  - The shared `PugConfiguration` instance
+  - The shared `PugEngine` instance for template loading and compilation
+  - Optional `RenderContext` for render-time settings (prettyPrint, mode, global variables)
   - Content type (default: "text/html;charset=UTF-8")
   - Exception rendering mode for development
 
 ### 3. PugView (`de.neuland.pug4j.spring.view.PugView`)
 - Extends Spring's `AbstractTemplateView`
 - Executes template rendering by:
-  - Retrieving compiled template from `PugConfiguration`
+  - Retrieving compiled template from `PugEngine`
   - Merging Spring MVC model data with the template
+  - Rendering with `RenderContext` (uses defaults if not specified)
   - Writing rendered HTML to the HTTP response
 - Features a development-friendly exception rendering mode (`renderExceptions`):
   - When enabled, catches `PugException` and renders formatted HTML error pages
@@ -79,16 +82,16 @@ The library consists of three core components that integrate Spring MVC with Pug
 ### Component Interaction Flow
 
 1. Spring MVC receives a request and determines a logical view name (e.g., "index")
-2. `PugViewResolver.buildView()` creates a `PugView` instance
+2. `PugViewResolver.buildView()` creates a `PugView` instance and injects `PugEngine` and `RenderContext`
 3. `PugView.renderMergedTemplateModel()` is invoked with the model data
-4. `PugView` retrieves the compiled template via `PugConfiguration.getTemplate()`
-5. `PugConfiguration` uses `SpringTemplateLoader.getReader()` to load the template source
-6. Template is compiled (or retrieved from cache) and rendered with the model
+4. `PugView` retrieves the compiled template via `PugEngine.getTemplate()`
+5. `PugEngine` uses `SpringTemplateLoader.getReader()` to load the template source
+6. Template is compiled (or retrieved from cache) and rendered with the model and `RenderContext`
 7. Output is written to the HTTP response
 
 ## Configuration Patterns
 
-The library supports both XML and Java-based Spring configuration:
+The library supports both XML and Java-based Spring configuration using the pug4j 3.0 API:
 
 **XML Configuration:**
 ```xml
@@ -96,16 +99,29 @@ The library supports both XML and Java-based Spring configuration:
     <property name="templateLoaderPath" value="classpath:/templates" />
 </bean>
 
-<bean id="pugConfiguration" class="de.neuland.pug4j.PugConfiguration">
-    <property name="caching" value="false" />
+<!-- Create PugEngine builder, then call build() -->
+<bean id="pugEngineBuilder" class="de.neuland.pug4j.PugEngine" factory-method="builder">
     <property name="templateLoader" ref="templateLoader" />
+    <property name="caching" value="false" />
 </bean>
 
+<bean id="pugEngine" factory-bean="pugEngineBuilder" factory-method="build" />
+
+<!-- Optional: Configure render context for pretty-printing, mode, etc. -->
+<bean id="renderContextBuilder" class="de.neuland.pug4j.RenderContext" factory-method="builder">
+    <property name="prettyPrint" value="false" />
+</bean>
+
+<bean id="renderContext" factory-bean="renderContextBuilder" factory-method="build" />
+
 <bean id="viewResolver" class="de.neuland.pug4j.spring.view.PugViewResolver">
-    <property name="configuration" ref="pugConfiguration" />
+    <property name="engine" ref="pugEngine" />
+    <property name="renderContext" ref="renderContext" />  <!-- Optional -->
     <property name="renderExceptions" value="true" />
 </bean>
 ```
+
+**Note:** Due to the builder pattern, Java configuration is recommended over XML for cleaner syntax.
 
 **Java Configuration:**
 ```java
@@ -121,21 +137,35 @@ public class PugConfig {
     }
 
     @Bean
-    public PugConfiguration pugConfiguration() {
-        PugConfiguration config = new PugConfiguration();
-        config.setCaching(false);
-        config.setTemplateLoader(templateLoader());
-        return config;
+    public PugEngine pugEngine() {
+        return PugEngine.builder()
+            .templateLoader(templateLoader())
+            .caching(false)
+            .build();
+    }
+
+    @Bean
+    public RenderContext renderContext() {
+        // Optional: customize rendering settings
+        return RenderContext.builder()
+            .prettyPrint(false)
+            .build();
     }
 
     @Bean
     public ViewResolver viewResolver() {
         PugViewResolver resolver = new PugViewResolver();
-        resolver.setConfiguration(pugConfiguration());
+        resolver.setEngine(pugEngine());
+        resolver.setRenderContext(renderContext());  // Optional
         return resolver;
     }
 }
 ```
+
+**Note:** If `RenderContext` is not set, the view will use `RenderContext.defaults()` which provides:
+- `prettyPrint = false`
+- `defaultMode = Mode.HTML`
+- No global variables
 
 ## Release Process
 

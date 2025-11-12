@@ -7,7 +7,8 @@ import java.io.Writer;
 import java.util.Locale;
 import java.util.Map;
 
-import de.neuland.pug4j.PugConfiguration;
+import de.neuland.pug4j.PugEngine;
+import de.neuland.pug4j.RenderContext;
 import de.neuland.pug4j.exceptions.PugCompilerException;
 import de.neuland.pug4j.exceptions.PugException;
 import de.neuland.pug4j.template.PugTemplate;
@@ -19,7 +20,8 @@ import org.springframework.web.servlet.view.AbstractTemplateView;
 public class PugView extends AbstractTemplateView {
 
 	private String encoding;
-	private PugConfiguration configuration;
+	private PugEngine engine;
+	private RenderContext renderContext;
 	private boolean renderExceptions = false;
 	private String contentType;
 
@@ -36,11 +38,12 @@ public class PugView extends AbstractTemplateView {
 		}
 
 		PrintWriter responseWriter = response.getWriter();
+		RenderContext context = getRenderContext();
 
 		if (renderExceptions) {
 			Writer writer = new StringWriter();
 			try {
-				configuration.renderTemplate(getTemplate(), model, writer);
+				engine.render(getTemplate(), model, context, writer);
 				responseWriter.write(writer.toString());
 			} catch (PugException e) {
 				String htmlString = e.toHtmlString(writer.toString());
@@ -54,7 +57,7 @@ public class PugView extends AbstractTemplateView {
 			}
 		} else {
 			try {
-				configuration.renderTemplate(getTemplate(), model, responseWriter);
+				engine.render(getTemplate(), model, context, responseWriter);
 			} catch (Throwable e) {
 				logger.error("failed to render template [" + getUrl() + "]\n", e);
 			}
@@ -62,29 +65,46 @@ public class PugView extends AbstractTemplateView {
 	}
 
 	protected PugTemplate getTemplate() throws IOException, PugException {
-		return configuration.getTemplate(getUrl());
+		return engine.getTemplate(getUrl());
 	}
 
 	@Override
 	public boolean checkResource(Locale locale) throws Exception {
-		return configuration.templateExists(getUrl());
+		return engine.templateExists(getUrl());
 	}
 
 	protected void processTemplate(PugTemplate template, Map<String, Object> model, HttpServletResponse response) throws IOException {
 		try {
-			configuration.renderTemplate(template, model, response.getWriter());
+			RenderContext context = getRenderContext();
+			engine.render(template, model, context, response.getWriter());
 		} catch (PugCompilerException e) {
 			e.printStackTrace();
 		}
 	}
 
-	/* Configuration Handling */
-	public PugConfiguration getConfiguration() {
-		return configuration;
+	/**
+	 * Returns the RenderContext to use for rendering. If no custom context is set,
+	 * returns a default context.
+	 */
+	private RenderContext getRenderContext() {
+		return renderContext != null ? renderContext : RenderContext.defaults();
 	}
 
-	public void setConfiguration(PugConfiguration configuration) {
-		this.configuration = configuration;
+	/* Configuration Handling */
+	public PugEngine getEngine() {
+		return engine;
+	}
+
+	public void setEngine(PugEngine engine) {
+		this.engine = engine;
+	}
+
+	public RenderContext getRenderContextConfig() {
+		return renderContext;
+	}
+
+	public void setRenderContext(RenderContext renderContext) {
+		this.renderContext = renderContext;
 	}
 
 	public String getEncoding() {
