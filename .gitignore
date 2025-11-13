@@ -6,3 +6,4 @@ target/
 .idea
 *.iml
 release.properties
+.claude/settings.local.json
