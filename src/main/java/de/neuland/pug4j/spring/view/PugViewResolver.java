@@ -3,6 +3,7 @@ package de.neuland.pug4j.spring.view;
 import de.neuland.pug4j.Pug4J.Mode;
 import de.neuland.pug4j.PugEngine;
 import de.neuland.pug4j.RenderContext;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
@@ -26,6 +27,8 @@ public class PugViewResolver extends AbstractTemplateViewResolver {
 
 	@Override
 	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+		Assert.state(this.engine != null,
+				"Property 'engine' is required: configure a PugEngine via PugViewResolver.setEngine(..)");
 		PugView view = (PugView) super.buildView(viewName);
 		view.setEngine(this.engine);
 		view.setRenderContext(obtainRenderContext());

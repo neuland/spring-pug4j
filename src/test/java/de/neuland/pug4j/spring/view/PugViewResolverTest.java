@@ -64,4 +64,13 @@ public class PugViewResolverTest {
         assertSame(engine, view.getEngine());
         assertEquals("text/html;charset=UTF-8", view.getContentType());
     }
+
+    @Test
+    public void shouldFailFastWhenEngineIsNotConfigured() {
+        PugViewResolver unconfigured = new PugViewResolver();
+
+        IllegalStateException exception =
+                assertThrows(IllegalStateException.class, () -> unconfigured.buildView("mode"));
+        assertTrue(exception.getMessage().contains("engine"));
+    }
 }
