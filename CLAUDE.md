@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Spring-pug4j is a Spring Framework integration library for Pug4J (formerly Jade4J), providing Spring MVC view resolution for Pug templates. The library acts as a bridge between Spring's view resolution mechanism and the Pug templating engine.
 
 **Key Details:**
-- Current version: 4.0.0-SNAPSHOT
+- Current version: 3.5.0-SNAPSHOT
 - Requires Java 17+
 - Spring Framework 6.2+ (Jakarta EE with jakarta.servlet-api 6.0)
 - Pug4J 3.0.0+ (using new `PugEngine` and `RenderContext` APIs)
@@ -73,11 +73,18 @@ The library consists of three core components that integrate Spring MVC with Pug
 - Executes template rendering by:
   - Retrieving compiled template from `PugEngine`
   - Merging Spring MVC model data with the template
-  - Rendering with `RenderContext` (uses defaults if not specified)
-  - Writing rendered HTML to the HTTP response
+  - Rendering into a `StringWriter` buffer first, so render errors never deliver partial pages
+  - Writing the buffered HTML to the HTTP response on success
 - Features a development-friendly exception rendering mode (`renderExceptions`):
-  - When enabled, catches `PugException` and renders formatted HTML error pages
-  - When disabled, logs errors and allows Spring's standard error handling
+  - When enabled, catches `PugException` and renders the styled error page via `PugErrorRenderer.renderHtml()`
+  - When disabled, exceptions propagate to Spring's standard error handling
+
+### 4. PugDebugErrorViewResolver (`de.neuland.pug4j.spring.boot.PugDebugErrorViewResolver`)
+- Spring Boot `ErrorViewResolver`, auto-configured by `PugDebugErrorViewResolverAutoConfiguration`
+- Renders pug4j's debug error page (via `PugErrorRenderer`) at `/error` when the request failed with a `PugException` (unwraps the cause chain of the servlet error attribute)
+- Leaves the Spring Boot error pipeline intact (status, logging); returns `null` for non-Pug errors
+- Disabled by default; enable with `pug4j.spring.debug-error-page=true` (development only — exposes template source and paths)
+- Spring Boot dependency is `optional` in the pom; plain Spring MVC users are unaffected
 
 ### Component Interaction Flow
 
@@ -162,10 +169,12 @@ public class PugConfig {
 }
 ```
 
-**Note:** If `RenderContext` is not set, the view will use `RenderContext.defaults()` which provides:
+**Note:** If `RenderContext` is not set, the resolver builds one with:
 - `prettyPrint = false`
-- `defaultMode = Mode.HTML`
+- `defaultMode = Mode.HTML` (backwards-compatible; pug4j 3.0.0's own `RenderContext.defaults()` uses `Mode.XHTML`)
 - No global variables
+
+The default mode for doctype-less templates is configurable via `PugViewResolver.setDefaultMode(Mode)`; an explicitly set `RenderContext` takes precedence.
 
 ## Release Process
 

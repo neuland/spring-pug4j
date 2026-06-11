@@ -1,5 +1,6 @@
 package de.neuland.pug4j.spring.view;
 
+import de.neuland.pug4j.Pug4J.Mode;
 import de.neuland.pug4j.PugEngine;
 import de.neuland.pug4j.RenderContext;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
@@ -9,6 +10,7 @@ public class PugViewResolver extends AbstractTemplateViewResolver {
 
 	private PugEngine engine;
 	private RenderContext renderContext;
+	private Mode defaultMode = Mode.HTML;
 	private boolean renderExceptions = false;
 	private String contentType = "text/html;charset=UTF-8";
 
@@ -26,10 +28,21 @@ public class PugViewResolver extends AbstractTemplateViewResolver {
 	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
 		PugView view = (PugView) super.buildView(viewName);
 		view.setEngine(this.engine);
-		view.setRenderContext(this.renderContext);
+		view.setRenderContext(obtainRenderContext());
 		view.setContentType(contentType);
 		view.setRenderExceptions(renderExceptions);
 		return view;
+	}
+
+	/**
+	 * Returns the RenderContext for the views: an explicitly configured context wins,
+	 * otherwise one is built from {@link #setDefaultMode(Mode)}.
+	 */
+	private RenderContext obtainRenderContext() {
+		if (renderContext != null) {
+			return renderContext;
+		}
+		return RenderContext.builder().defaultMode(defaultMode).build();
 	}
 
 	public PugEngine getEngine() {
@@ -46,6 +59,20 @@ public class PugViewResolver extends AbstractTemplateViewResolver {
 
 	public void setRenderContext(RenderContext renderContext) {
 		this.renderContext = renderContext;
+	}
+
+	public Mode getDefaultMode() {
+		return defaultMode;
+	}
+
+	/**
+	 * Sets the default output mode used for templates without a doctype. Defaults to
+	 * {@link Mode#HTML} for backwards compatibility with earlier spring-pug4j output
+	 * (pug4j 3.0.0's own default is {@link Mode#XHTML}, matching pug.js). Ignored if
+	 * a full {@link RenderContext} is set via {@link #setRenderContext(RenderContext)}.
+	 */
+	public void setDefaultMode(Mode defaultMode) {
+		this.defaultMode = defaultMode;
 	}
 
 	public void setRenderExceptions(boolean renderExceptions) {

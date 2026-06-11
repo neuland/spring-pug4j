@@ -116,6 +116,30 @@ public class PugConfig {
 
 **Note:** If `RenderContext` is not set, the view resolver will use default settings (prettyPrint=false, defaultMode=HTML, no global variables).
 
+### Default Mode
+
+pug4j 3.0.0 changed its own default mode to `Mode.XHTML` (matching pug.js: for templates without a doctype, void tags self-close like `<input/>` and boolean attributes render as `checked="checked"`). For backwards compatibility, spring-pug4j keeps `Mode.HTML` (terse output like `<input checked>`) as its default. Templates with an explicit doctype are not affected.
+
+To opt into the pug.js-conformant behavior:
+
+```java
+PugViewResolver viewResolver = new PugViewResolver();
+viewResolver.setEngine(pugEngine());
+viewResolver.setDefaultMode(Pug4J.Mode.XHTML);
+```
+
+If a full `RenderContext` is set via `setRenderContext(...)`, its `defaultMode` wins and `setDefaultMode(...)` is ignored.
+
+### Debug Error Page (Spring Boot)
+
+When running on Spring Boot, spring-pug4j can auto-configure an `ErrorViewResolver` that renders pug4j's styled debug error page (template source context, file path, line/column) whenever a request fails with a `PugException`. The regular Spring Boot error pipeline (status code, logging, `/error`) stays untouched — only the rendered error view is replaced; non-Pug errors fall through to the default error handling.
+
+The page exposes template source and paths, so it is **disabled by default**. Enable it for development only:
+
+```properties
+pug4j.spring.debug-error-page=true
+```
+
 ## Template Loader Path
 
 SpringTemplateLoader uses Spring Framework's `ResourceLoader` for loading templates. You can use any Spring resource location:
@@ -162,9 +186,9 @@ The view name `"index"` will be resolved to `classpath:/templates/index.pug` and
 
 ## Migration Guide
 
-### Migrating from spring-pug4j 3.x to 4.0.0
+### Migrating from spring-pug4j 3.4.x to 3.5.0
 
-Version 4.0.0 migrates from the deprecated `PugConfiguration` API (deprecated in pug4j 3.0.0) to the new `PugEngine` and `RenderContext` APIs.
+Version 3.5.0 migrates from the deprecated `PugConfiguration` API (deprecated in pug4j 3.0.0) to the new `PugEngine` and `RenderContext` APIs.
 
 #### Changes Required
 
@@ -188,7 +212,7 @@ public ViewResolver viewResolver() {
 }
 ```
 
-**After (spring-pug4j 4.0.0 with pug4j 3.0+):**
+**After (spring-pug4j 3.5.0 with pug4j 3.0+):**
 
 ```java
 @Bean
@@ -306,11 +330,34 @@ public class PugConfig {
 
 ## Versions
 
-### 4.0.0
+### 3.5.0
 * **Breaking**: Migrated from deprecated `PugConfiguration` to new `PugEngine` + `RenderContext` APIs
 * Updated to pug4j 3.0.0
-* Eliminated deprecation warnings
+* Eliminated deprecation warnings (error pages now use `PugErrorRenderer` instead of the deprecated `PugException.toHtmlString`)
+* `PugViewResolver.setDefaultMode(Mode)` for templates without a doctype — defaults to `Mode.HTML` for backwards-compatible output (pug4j 3.0.0 itself defaults to `Mode.XHTML`)
+* `PugView` renders into a buffer first, so failing templates never deliver partial pages; render errors propagate to Spring's error handling when `renderExceptions` is off
+* New auto-configured Spring Boot debug error page (`pug4j.spring.debug-error-page=true`, off by default)
 * See [Migration Guide](#migration-guide) above for upgrade instructions
+
+### 3.4.1
+* Updated to pug4j 2.4.1
+
+### 3.4.0
+* Updated to pug4j 2.4.0
+* Switched publishing to the Maven Central Portal
+
+### 3.3.1
+* Updated to pug4j 2.3.1
+* Updated to Spring Framework 6.2
+
+### 3.3.0
+* Updated to pug4j 2.3.0
+* Updated to Spring Framework 6.1
+* Updated dependencies
+
+### 3.2.0
+* Updated to pug4j 2.2.0
+* Updated dependencies
 
 ### 3.1.0
 * Updated dependencies (thanks dbelyaev)
@@ -331,14 +378,14 @@ Add the following dependency to your `pom.xml`:
 <dependency>
   <groupId>de.neuland-bfi</groupId>
   <artifactId>spring-pug4j</artifactId>
-  <version>4.0.0</version>
+  <version>3.5.0</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```gradle
-implementation 'de.neuland-bfi:spring-pug4j:4.0.0'
+implementation 'de.neuland-bfi:spring-pug4j:3.5.0'
 ```
 
 ## Features
