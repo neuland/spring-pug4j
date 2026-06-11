@@ -1,14 +1,14 @@
 package de.neuland.pug4j.spring.view;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.util.Locale;
 import java.util.Map;
 
-import de.neuland.pug4j.PugConfiguration;
-import de.neuland.pug4j.exceptions.PugCompilerException;
+import de.neuland.pug4j.Pug4J.Mode;
+import de.neuland.pug4j.PugEngine;
+import de.neuland.pug4j.PugErrorRenderer;
+import de.neuland.pug4j.RenderContext;
 import de.neuland.pug4j.exceptions.PugException;
 import de.neuland.pug4j.template.PugTemplate;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,8 +18,17 @@ import org.springframework.web.servlet.view.AbstractTemplateView;
 
 public class PugView extends AbstractTemplateView {
 
+	/**
+	 * Default render context with Mode.HTML to keep backwards compatibility with
+	 * earlier spring-pug4j output for templates without a doctype.
+	 * (RenderContext.defaults() uses Mode.XHTML since pug4j 3.0.0.)
+	 */
+	private static final RenderContext COMPATIBILITY_DEFAULT_CONTEXT =
+			RenderContext.builder().defaultMode(Mode.HTML).build();
+
 	private String encoding;
-	private PugConfiguration configuration;
+	private PugEngine engine;
+	private RenderContext renderContext;
 	private boolean renderExceptions = false;
 	private String contentType;
 
@@ -28,63 +37,67 @@ public class PugView extends AbstractTemplateView {
 		doRender(model, response);
 	}
 
-	private void doRender(Map<String, Object> model, HttpServletResponse response) throws IOException {
+	private void doRender(Map<String, Object> model, HttpServletResponse response) throws Exception {
 		logger.trace("Rendering Pug template [" + getUrl() + "] in PugView '" + getBeanName() + "'");
 
 		if (contentType != null) {
 			response.setContentType(contentType);
 		}
 
-		PrintWriter responseWriter = response.getWriter();
-
-		if (renderExceptions) {
-			Writer writer = new StringWriter();
-			try {
-				configuration.renderTemplate(getTemplate(), model, writer);
-				responseWriter.write(writer.toString());
-			} catch (PugException e) {
-				String htmlString = e.toHtmlString(writer.toString());
-				responseWriter.write(htmlString);
+		// Render into a buffer first so a failing template never sends a partial page.
+		StringWriter buffer = new StringWriter();
+		try {
+			engine.render(getTemplate(), model, getRenderContext(), buffer);
+		} catch (PugException e) {
+			if (renderExceptions) {
 				logger.error("failed to render template [" + getUrl() + "]", e);
-			} catch (IOException e) {
-				responseWriter.write("<pre>could not find template: " + getUrl() + "\n");
-				e.printStackTrace(responseWriter);
-				responseWriter.write("</pre>");
-				logger.error("could not find template", e);
+				response.getWriter().write(PugErrorRenderer.renderHtml(e, buffer.toString()));
+				return;
 			}
-		} else {
-			try {
-				configuration.renderTemplate(getTemplate(), model, responseWriter);
-			} catch (Throwable e) {
-				logger.error("failed to render template [" + getUrl() + "]\n", e);
+			throw e;
+		} catch (IOException e) {
+			if (renderExceptions) {
+				logger.error("could not find template [" + getUrl() + "]", e);
+				response.getWriter().write("<pre>could not find template: " + getUrl() + "</pre>");
+				return;
 			}
+			throw e;
 		}
+		response.getWriter().write(buffer.toString());
 	}
 
 	protected PugTemplate getTemplate() throws IOException, PugException {
-		return configuration.getTemplate(getUrl());
+		return engine.getTemplate(getUrl());
 	}
 
 	@Override
 	public boolean checkResource(Locale locale) throws Exception {
-		return configuration.templateExists(getUrl());
+		return engine.templateExists(getUrl());
 	}
 
-	protected void processTemplate(PugTemplate template, Map<String, Object> model, HttpServletResponse response) throws IOException {
-		try {
-			configuration.renderTemplate(template, model, response.getWriter());
-		} catch (PugCompilerException e) {
-			e.printStackTrace();
-		}
+	/**
+	 * Returns the RenderContext to use for rendering. If no custom context is set,
+	 * returns a default context with Mode.HTML for backwards compatibility.
+	 */
+	private RenderContext getRenderContext() {
+		return renderContext != null ? renderContext : COMPATIBILITY_DEFAULT_CONTEXT;
 	}
 
 	/* Configuration Handling */
-	public PugConfiguration getConfiguration() {
-		return configuration;
+	public PugEngine getEngine() {
+		return engine;
 	}
 
-	public void setConfiguration(PugConfiguration configuration) {
-		this.configuration = configuration;
+	public void setEngine(PugEngine engine) {
+		this.engine = engine;
+	}
+
+	public RenderContext getRenderContextConfig() {
+		return renderContext;
+	}
+
+	public void setRenderContext(RenderContext renderContext) {
+		this.renderContext = renderContext;
 	}
 
 	public String getEncoding() {
