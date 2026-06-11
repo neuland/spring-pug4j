@@ -337,6 +337,7 @@ public class PugConfig {
 * `PugViewResolver.setDefaultMode(Mode)` for templates without a doctype — defaults to `Mode.HTML` for backwards-compatible output (pug4j 3.0.0 itself defaults to `Mode.XHTML`)
 * `PugView` renders into a buffer first, so failing templates never deliver partial pages; render errors propagate to Spring's error handling when `renderExceptions` is off
 * New auto-configured Spring Boot debug error page (`pug4j.spring.debug-error-page=true`, off by default)
+* `PugViewResolver` now fails fast with a clear error message if no `PugEngine` is configured (previously a `NullPointerException` at the first request)
 * See [Migration Guide](#migration-guide) above for upgrade instructions
 
 ### 3.4.1
@@ -407,7 +408,7 @@ implementation 'de.neuland-bfi:spring-pug4j:3.5.0'
 
 The MIT License
 
-Copyright (C) 2012-2025 [neuland Büro für Informatik](http://www.neuland-bfi.de/), Bremen, Germany
+Copyright (C) 2012-2026 [neuland Büro für Informatik](http://www.neuland-bfi.de/), Bremen, Germany
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
