@@ -48,7 +48,7 @@ All settings live under `spring.pug4j.*` and follow the conventions you know fro
 | `spring.pug4j.render-exceptions` | `false` | Render Pug exceptions as styled HTML error pages instead of propagating them (development only). |
 | `spring.pug4j.debug-error-page` | `false` | Render pug4j's debug error page at `/error` for Pug exceptions (development only, see below). |
 
-Every auto-configured bean backs off as soon as you define your own (`TemplateLoader`, `PugEngine`, or `PugViewResolver`), so existing manual configurations keep working unchanged. The manual bean declarations below are only needed for plain Spring MVC without Boot, or when you need settings the properties don't cover (e.g. a custom `basePath` or global render variables).
+Every auto-configured bean backs off as soon as you define your own (`TemplateLoader`, `PugEngine`, or `PugViewResolver`), so existing manual configurations keep working unchanged. For the view resolver the back-off matches on the bean type *and* on the conventional bean names `viewResolver`/`pugViewResolver` — Spring evaluates conditions against the declared return type of `@Bean` methods, so prefer declaring `PugViewResolver` (not plain `ViewResolver`) or use one of those bean names. The manual bean declarations below are only needed for plain Spring MVC without Boot, or when you need settings the properties don't cover (e.g. a custom `basePath` or global render variables).
 
 Typical development setup:
 
@@ -138,7 +138,7 @@ public class PugConfig {
     }
 
     @Bean
-    public ViewResolver viewResolver() {
+    public PugViewResolver viewResolver() {
         PugViewResolver viewResolver = new PugViewResolver();
         viewResolver.setEngine(pugEngine());
         viewResolver.setRenderContext(renderContext());  // Optional

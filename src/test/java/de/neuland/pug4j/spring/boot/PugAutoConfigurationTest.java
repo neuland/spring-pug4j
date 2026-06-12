@@ -6,7 +6,10 @@ import de.neuland.pug4j.spring.view.PugViewResolver;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -80,6 +83,50 @@ public class PugAutoConfigurationTest {
         contextRunner
                 .withBean("viewResolver", PugViewResolver.class, PugViewResolver::new)
                 .run(context -> assertEquals(1, context.getBeansOfType(PugViewResolver.class).size()));
+    }
+
+    @Test
+    public void shouldBackOffWhenUserDeclaresResolverWithSupertypeReturnType() {
+        // @ConditionalOnMissingBean only sees the declared return type before instantiation,
+        // so a @Bean method declared as ViewResolver (like the README example) is invisible
+        // to the type match — the bean NAME "viewResolver" must trigger the back-off.
+        contextRunner
+                .withUserConfiguration(SupertypeDeclaredResolverConfig.class)
+                .run(context -> assertEquals("auto-configuration must back off for the conventional "
+                        + "'viewResolver' bean even when its declared type is just ViewResolver",
+                        1, context.getBeansOfType(PugViewResolver.class).size()));
+    }
+
+    @Test
+    public void shouldBackOffWhenUserDeclaresResolverNamedPugViewResolverWithSupertypeReturnType() {
+        // Same situation with the auto-configuration's own bean name: without the name-based
+        // back-off this would not only duplicate the resolver but collide on the bean name.
+        contextRunner
+                .withUserConfiguration(SupertypeDeclaredPugNamedResolverConfig.class)
+                .run(context -> {
+                    assertNull(context.getStartupFailure());
+                    assertEquals(1, context.getBeansOfType(PugViewResolver.class).size());
+                });
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    static class SupertypeDeclaredResolverConfig {
+
+        @Bean
+        ViewResolver viewResolver() {
+            return new PugViewResolver();
+        }
+
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    static class SupertypeDeclaredPugNamedResolverConfig {
+
+        @Bean
+        ViewResolver pugViewResolver() {
+            return new PugViewResolver();
+        }
+
     }
 
     @Test

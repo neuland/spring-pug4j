@@ -60,7 +60,11 @@ public class PugAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	// Also matches on the conventional bean names: @ConditionalOnMissingBean evaluates before
+	// instantiation and only sees declared return types, so a user @Bean declared as plain
+	// ViewResolver would be invisible to the type match and end up duplicated (or collide on
+	// the bean name). Either bean name or a PugViewResolver-typed bean triggers the back-off.
+	@ConditionalOnMissingBean(value = PugViewResolver.class, name = {"viewResolver", "pugViewResolver"})
 	public PugViewResolver pugViewResolver(PugEngine pugEngine, PugProperties properties) {
 		PugViewResolver resolver = new PugViewResolver();
 		resolver.setEngine(pugEngine);
