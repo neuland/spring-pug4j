@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 /**
  * Matches when the debug error page is enabled — via {@code spring.pug4j.debug-error-page}
- * or the deprecated {@code pug4j.spring.debug-error-page} (pre-3.5.1 location).
+ * or the deprecated {@code pug4j.spring.debug-error-page} (pre-3.6.0 location).
  */
 class PugDebugErrorPageCondition extends AnyNestedCondition {
 

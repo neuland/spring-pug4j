@@ -173,7 +173,7 @@ The page exposes template source and paths, so it is **disabled by default**. En
 spring.pug4j.debug-error-page=true
 ```
 
-(The pre-3.5.1 property name `pug4j.spring.debug-error-page` is deprecated but still honored.)
+(The pre-3.6.0 property name `pug4j.spring.debug-error-page` is deprecated but still honored.)
 
 The property works on both Spring Boot 3 and Spring Boot 4. Boot 4 moved the `ErrorViewResolver` interface to `org.springframework.boot.webmvc.autoconfigure.error` (artifact `spring-boot-webmvc`); spring-pug4j ships resolvers for both locations and auto-configures the one matching your classpath — no extra setup needed.
 
@@ -376,13 +376,14 @@ public class PugConfig {
 
 ## Versions
 
-### 3.5.1
+### 3.6.0
 * Optional streaming output (`spring.pug4j.produce-partial-output-while-processing=true`, or `setProducePartialOutputWhileProcessing` on the resolver) for faster time-to-first-byte on large pages; default stays buffered so failing templates never deliver partial pages
 * Full Spring Boot auto-configuration: templates render from `classpath:/templates/` with zero bean configuration; all settings under `spring.pug4j.*` following `spring.thymeleaf.*` conventions (with IDE completion via configuration metadata); auto-configured beans back off when you define your own
-* Property prefix moved to `spring.pug4j.*` — the pre-3.5.1 `pug4j.spring.debug-error-page` is deprecated but still honored
+* Property prefix moved to `spring.pug4j.*` — the pre-3.6.0 `pug4j.spring.debug-error-page` is deprecated but still honored
 * Debug error page now works on Spring Boot 4: Boot 4 relocated the `ErrorViewResolver` interface to `org.springframework.boot.webmvc.autoconfigure.error` (artifact `spring-boot-webmvc`); spring-pug4j ships resolvers for both locations and auto-configures the one matching the classpath (no new mandatory runtime dependencies)
 * `PugView` no longer presets the response Content-Type before rendering: a propagated render error previously left `text/html` behind and broke content negotiation in the error dispatch (Spring Boot's JSON error response failed with `HttpMessageNotWritableException`)
 * Documented the Spring Security setup required for the debug error page (`dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()`)
+* Removed the unused `PugView.getEncoding()`/`setEncoding()` accessors — they had no effect; template decoding is handled by `SpringTemplateLoader`, the response charset by the content type
 
 ### 3.5.0
 * **Breaking**: Migrated from deprecated `PugConfiguration` to new `PugEngine` + `RenderContext` APIs

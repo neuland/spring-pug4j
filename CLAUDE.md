@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Spring-pug4j is a Spring Framework integration library for Pug4J (formerly Jade4J), providing Spring MVC view resolution for Pug templates. The library acts as a bridge between Spring's view resolution mechanism and the Pug templating engine.
 
 **Key Details:**
-- Current version: 3.5.0-SNAPSHOT
+- Current version: 3.6.0-SNAPSHOT
 - Requires Java 17+
 - Spring Framework 6.2+ (Jakarta EE with jakarta.servlet-api 6.0)
 - Pug4J 3.0.0+ (using new `PugEngine` and `RenderContext` APIs)
@@ -92,7 +92,7 @@ The library consists of three core components that integrate Spring MVC with Pug
 - Spring Boot `ErrorViewResolver`, auto-configured by `PugDebugErrorViewResolverAutoConfiguration`
 - Renders pug4j's debug error page (via `PugErrorRenderer`) at `/error` when the request failed with a `PugException` (unwraps the cause chain of the servlet error attribute)
 - Leaves the Spring Boot error pipeline intact (status, logging); returns `null` for non-Pug errors
-- Disabled by default; enable with `spring.pug4j.debug-error-page=true` (development only — exposes template source and paths). The pre-3.5.1 `pug4j.spring.debug-error-page` is deprecated but still honored (`PugDebugErrorPageCondition`, an `AnyNestedCondition` ORing both prefixes)
+- Disabled by default; enable with `spring.pug4j.debug-error-page=true` (development only — exposes template source and paths). The pre-3.6.0 `pug4j.spring.debug-error-page` is deprecated but still honored (`PugDebugErrorPageCondition`, an `AnyNestedCondition` ORing both prefixes)
 - Spring Boot dependency is `optional` in the pom; plain Spring MVC users are unaffected
 - Spring Boot 4 relocated `ErrorViewResolver` to `org.springframework.boot.webmvc.autoconfigure.error` (artifact `spring-boot-webmvc`). `Boot4PugDebugErrorViewResolver` + `Boot4PugDebugErrorViewResolverAutoConfiguration` cover that path; both resolvers share their logic via the package-private `PugDebugErrorPage` helper. Exactly one auto-configuration activates per classpath (`@ConditionalOnClass` on the respective interface; the Boot 4 config guards by class *name* to avoid loading a missing type). `spring-boot-webmvc:4.0.x` is in the pom as `optional` with all transitives excluded — compile-only, no consumer exposure
 
