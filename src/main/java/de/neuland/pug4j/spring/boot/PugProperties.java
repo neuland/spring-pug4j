@@ -41,7 +41,8 @@ public class PugProperties {
 	private Mode mode = Mode.HTML;
 
 	/**
-	 * Template files encoding.
+	 * Template files encoding (file reading only). Unlike Thymeleaf, the response
+	 * charset is not derived from this; it is part of the content-type value.
 	 */
 	private Charset encoding = StandardCharsets.UTF_8;
 

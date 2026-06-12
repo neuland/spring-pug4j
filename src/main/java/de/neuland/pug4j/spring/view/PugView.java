@@ -26,7 +26,6 @@ public class PugView extends AbstractTemplateView {
 	private static final RenderContext COMPATIBILITY_DEFAULT_CONTEXT =
 			RenderContext.builder().defaultMode(Mode.HTML).build();
 
-	private String encoding;
 	private PugEngine engine;
 	private RenderContext renderContext;
 	private boolean renderExceptions = false;
@@ -153,14 +152,6 @@ public class PugView extends AbstractTemplateView {
 
 	public void setRenderContext(RenderContext renderContext) {
 		this.renderContext = renderContext;
-	}
-
-	public String getEncoding() {
-		return encoding;
-	}
-
-	public void setEncoding(String encoding) {
-		this.encoding = encoding;
 	}
 
 	public void setRenderExceptions(boolean renderExceptions) {

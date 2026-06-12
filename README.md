@@ -37,7 +37,7 @@ All settings live under `spring.pug4j.*` and follow the conventions you know fro
 | `spring.pug4j.enabled` | `true` | Whether to auto-configure Pug4J view resolution. |
 | `spring.pug4j.prefix` | `classpath:/templates/` | Prefix that gets prepended to view names when building a URL. |
 | `spring.pug4j.suffix` | `.pug` | Suffix that gets appended to view names when building a URL. |
-| `spring.pug4j.encoding` | `UTF-8` | Template files encoding. |
+| `spring.pug4j.encoding` | `UTF-8` | Template files encoding (file reading only). Unlike Thymeleaf, the response charset is not derived from this — it is part of `spring.pug4j.content-type`. |
 | `spring.pug4j.cache` | `true` | Whether to enable template caching. Disable during development. |
 | `spring.pug4j.mode` | `HTML` | Output mode for templates without an explicit doctype (`HTML`, `XHTML`, `XML`). |
 | `spring.pug4j.content-type` | `text/html;charset=UTF-8` | Content-Type written to the HTTP response. |
