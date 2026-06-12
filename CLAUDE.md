@@ -83,7 +83,7 @@ The library consists of three core components that integrate Spring MVC with Pug
 
 ### 4. PugAutoConfiguration (`de.neuland.pug4j.spring.boot.PugAutoConfiguration`)
 - Full Spring Boot auto-configuration (Boot 3 and 4): registers `SpringTemplateLoader`, `PugEngine`, and `PugViewResolver` with zero manual bean configuration
-- All settings under `spring.pug4j.*` (`PugProperties`), names mirroring `spring.thymeleaf.*`: `prefix`, `suffix`, `encoding`, `cache`, `mode`, `content-type`, `pretty-print`, `check-template-location`, `view-names`, `produce-partial-output-while-processing`, plus pug-specific `render-exceptions` and `debug-error-page`
+- All settings under `spring.pug4j.*` (`PugProperties`), names mirroring `spring.thymeleaf.*`: `prefix`, `suffix`, `encoding`, `cache`, `mode`, `content-type`, `pretty-print`, `check-template-location`, `view-names`, `view-resolver-order`, `produce-partial-output-while-processing`, plus pug-specific `render-exceptions` and `debug-error-page`
 - Every bean is `@ConditionalOnMissingBean` (loader on `TemplateLoader`, engine on `PugEngine`, resolver on `PugViewResolver`), so manual configurations win; `spring.pug4j.enabled=false` disables everything
 - View resolver order is `LOWEST_PRECEDENCE - 5` (Thymeleaf's slot); missing templates fall through to other resolvers via `PugView.checkResource()`
 - `spring-boot-configuration-processor` (optional) generates metadata for IDE completion; `additional-spring-configuration-metadata.json` marks the legacy `pug4j.spring.debug-error-page` deprecated
