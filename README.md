@@ -140,6 +140,17 @@ The page exposes template source and paths, so it is **disabled by default**. En
 pug4j.spring.debug-error-page=true
 ```
 
+The property works on both Spring Boot 3 and Spring Boot 4. Boot 4 moved the `ErrorViewResolver` interface to `org.springframework.boot.webmvc.autoconfigure.error` (artifact `spring-boot-webmvc`); spring-pug4j ships resolvers for both locations and auto-configures the one matching your classpath — no extra setup needed.
+
+**Spring Security note:** the debug page is rendered via the error dispatch to `/error`. If Spring Security blocks that dispatch, template errors surface as a bare 403 instead of the debug page. Permit the error dispatch in your security configuration:
+
+```java
+http.authorizeHttpRequests(auth -> auth
+    .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+    // ... your other rules
+);
+```
+
 ## Template Loader Path
 
 SpringTemplateLoader uses Spring Framework's `ResourceLoader` for loading templates. You can use any Spring resource location:
@@ -329,6 +340,11 @@ public class PugConfig {
 ```
 
 ## Versions
+
+### 3.5.1
+* Debug error page now works on Spring Boot 4: Boot 4 relocated the `ErrorViewResolver` interface to `org.springframework.boot.webmvc.autoconfigure.error` (artifact `spring-boot-webmvc`); spring-pug4j ships resolvers for both locations and auto-configures the one matching the classpath (no new mandatory runtime dependencies)
+* `PugView` no longer presets the response Content-Type before rendering: a propagated render error previously left `text/html` behind and broke content negotiation in the error dispatch (Spring Boot's JSON error response failed with `HttpMessageNotWritableException`)
+* Documented the Spring Security setup required for the debug error page (`dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()`)
 
 ### 3.5.0
 * **Breaking**: Migrated from deprecated `PugConfiguration` to new `PugEngine` + `RenderContext` APIs

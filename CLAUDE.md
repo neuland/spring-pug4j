@@ -75,6 +75,7 @@ The library consists of three core components that integrate Spring MVC with Pug
   - Merging Spring MVC model data with the template
   - Rendering into a `StringWriter` buffer first, so render errors never deliver partial pages
   - Writing the buffered HTML to the HTTP response on success
+  - Setting the response Content-Type only when actually writing (overrides `applyContentType` as no-op): a propagated render exception must not leave a preset Content-Type behind, or content negotiation in the error dispatch breaks (e.g. Spring Boot's JSON error response fails with `HttpMessageNotWritableException`)
 - Features a development-friendly exception rendering mode (`renderExceptions`):
   - When enabled, catches `PugException` and renders the styled error page via `PugErrorRenderer.renderHtml()`
   - When disabled, exceptions propagate to Spring's standard error handling
@@ -85,6 +86,7 @@ The library consists of three core components that integrate Spring MVC with Pug
 - Leaves the Spring Boot error pipeline intact (status, logging); returns `null` for non-Pug errors
 - Disabled by default; enable with `pug4j.spring.debug-error-page=true` (development only — exposes template source and paths)
 - Spring Boot dependency is `optional` in the pom; plain Spring MVC users are unaffected
+- Spring Boot 4 relocated `ErrorViewResolver` to `org.springframework.boot.webmvc.autoconfigure.error` (artifact `spring-boot-webmvc`). `Boot4PugDebugErrorViewResolver` + `Boot4PugDebugErrorViewResolverAutoConfiguration` cover that path; both resolvers share their logic via the package-private `PugDebugErrorPage` helper. Exactly one auto-configuration activates per classpath (`@ConditionalOnClass` on the respective interface; the Boot 4 config guards by class *name* to avoid loading a missing type). `spring-boot-webmvc:4.0.x` is in the pom as `optional` with all transitives excluded — compile-only, no consumer exposure
 
 ### Component Interaction Flow
 
