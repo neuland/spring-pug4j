@@ -37,12 +37,15 @@ public class PugView extends AbstractTemplateView {
 		doRender(model, response);
 	}
 
+	@Override
+	protected void applyContentType(HttpServletResponse response) {
+		// Deferred to writeHtml(): a propagated render exception must not leave a preset
+		// Content-Type behind — it breaks content negotiation in the error dispatch
+		// (e.g. Spring Boot's JSON error response fails with HttpMessageNotWritableException).
+	}
+
 	private void doRender(Map<String, Object> model, HttpServletResponse response) throws Exception {
 		logger.trace("Rendering Pug template [" + getUrl() + "] in PugView '" + getBeanName() + "'");
-
-		if (contentType != null) {
-			response.setContentType(contentType);
-		}
 
 		// Render into a buffer first so a failing template never sends a partial page.
 		StringWriter buffer = new StringWriter();
@@ -51,19 +54,26 @@ public class PugView extends AbstractTemplateView {
 		} catch (PugException e) {
 			if (renderExceptions) {
 				logger.error("failed to render template [" + getUrl() + "]", e);
-				response.getWriter().write(PugErrorRenderer.renderHtml(e, buffer.toString()));
+				writeHtml(response, PugErrorRenderer.renderHtml(e, buffer.toString()));
 				return;
 			}
 			throw e;
 		} catch (IOException e) {
 			if (renderExceptions) {
 				logger.error("could not find template [" + getUrl() + "]", e);
-				response.getWriter().write("<pre>could not find template: " + getUrl() + "</pre>");
+				writeHtml(response, "<pre>could not find template: " + getUrl() + "</pre>");
 				return;
 			}
 			throw e;
 		}
-		response.getWriter().write(buffer.toString());
+		writeHtml(response, buffer.toString());
+	}
+
+	private void writeHtml(HttpServletResponse response, String html) throws IOException {
+		if (contentType != null) {
+			response.setContentType(contentType);
+		}
+		response.getWriter().write(html);
 	}
 
 	protected PugTemplate getTemplate() throws IOException, PugException {

@@ -10,6 +10,9 @@ import org.junit.Test;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.web.context.support.StaticWebApplicationContext;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +44,16 @@ public class PugViewTest {
         PugView view = new PugView();
         view.setEngine(engine);
         view.setUrl(url);
+        return view;
+    }
+
+    /** Wires the minimal web context required by the full AbstractView.render() path. */
+    private PugView fullRenderView(String url) {
+        PugView view = view(url);
+        StaticWebApplicationContext context = new StaticWebApplicationContext();
+        context.setServletContext(new MockServletContext());
+        view.setApplicationContext(context);
+        request.setAttribute(DispatcherServlet.WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
         return view;
     }
 
@@ -97,5 +110,47 @@ public class PugViewTest {
         view.renderMergedTemplateModel(model, request, response);
 
         assertEquals("text/html;charset=UTF-8", response.getContentType());
+    }
+
+    @Test
+    public void shouldNotPresetContentTypeWhenExceptionPropagates() throws Exception {
+        PugView view = view("broken");
+        view.setContentType("text/html;charset=UTF-8");
+        view.setRenderExceptions(false);
+
+        try {
+            view.renderMergedTemplateModel(model, request, response);
+            fail("expected PugException");
+        } catch (PugException expected) {
+            // a preset Content-Type would break content negotiation in the error dispatch
+            assertNull(response.getContentType());
+        }
+    }
+
+    @Test
+    public void shouldNotPresetContentTypeViaFullRenderPathWhenExceptionPropagates() throws Exception {
+        // The full render() path includes AbstractTemplateView.applyContentType(),
+        // which PugView defers until the template rendered successfully.
+        PugView view = fullRenderView("broken");
+        view.setContentType("text/html;charset=UTF-8");
+        view.setRenderExceptions(false);
+
+        try {
+            view.render(model, request, response);
+            fail("expected PugException");
+        } catch (PugException expected) {
+            assertNull(response.getContentType());
+        }
+    }
+
+    @Test
+    public void shouldSetContentTypeViaFullRenderPathOnSuccess() throws Exception {
+        PugView view = fullRenderView("mode");
+        view.setContentType("text/html;charset=UTF-8");
+
+        view.render(model, request, response);
+
+        assertEquals("text/html;charset=UTF-8", response.getContentType());
+        assertEquals("<input checked>", response.getContentAsString().trim());
     }
 }
