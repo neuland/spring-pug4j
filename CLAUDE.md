@@ -80,11 +80,18 @@ The library consists of three core components that integrate Spring MVC with Pug
   - When enabled, catches `PugException` and renders the styled error page via `PugErrorRenderer.renderHtml()`
   - When disabled, exceptions propagate to Spring's standard error handling
 
-### 4. PugDebugErrorViewResolver (`de.neuland.pug4j.spring.boot.PugDebugErrorViewResolver`)
+### 4. PugAutoConfiguration (`de.neuland.pug4j.spring.boot.PugAutoConfiguration`)
+- Full Spring Boot auto-configuration (Boot 3 and 4): registers `SpringTemplateLoader`, `PugEngine`, and `PugViewResolver` with zero manual bean configuration
+- All settings under `spring.pug4j.*` (`PugProperties`), names mirroring `spring.thymeleaf.*`: `prefix`, `suffix`, `encoding`, `cache`, `mode`, `content-type`, `pretty-print`, `check-template-location`, `view-names`, plus pug-specific `render-exceptions` and `debug-error-page`
+- Every bean is `@ConditionalOnMissingBean` (loader on `TemplateLoader`, engine on `PugEngine`, resolver on `PugViewResolver`), so manual configurations win; `spring.pug4j.enabled=false` disables everything
+- View resolver order is `LOWEST_PRECEDENCE - 5` (Thymeleaf's slot); missing templates fall through to other resolvers via `PugView.checkResource()`
+- `spring-boot-configuration-processor` (optional) generates metadata for IDE completion; `additional-spring-configuration-metadata.json` marks the legacy `pug4j.spring.debug-error-page` deprecated
+
+### 5. PugDebugErrorViewResolver (`de.neuland.pug4j.spring.boot.PugDebugErrorViewResolver`)
 - Spring Boot `ErrorViewResolver`, auto-configured by `PugDebugErrorViewResolverAutoConfiguration`
 - Renders pug4j's debug error page (via `PugErrorRenderer`) at `/error` when the request failed with a `PugException` (unwraps the cause chain of the servlet error attribute)
 - Leaves the Spring Boot error pipeline intact (status, logging); returns `null` for non-Pug errors
-- Disabled by default; enable with `pug4j.spring.debug-error-page=true` (development only — exposes template source and paths)
+- Disabled by default; enable with `spring.pug4j.debug-error-page=true` (development only — exposes template source and paths). The pre-3.5.1 `pug4j.spring.debug-error-page` is deprecated but still honored (`PugDebugErrorPageCondition`, an `AnyNestedCondition` ORing both prefixes)
 - Spring Boot dependency is `optional` in the pom; plain Spring MVC users are unaffected
 - Spring Boot 4 relocated `ErrorViewResolver` to `org.springframework.boot.webmvc.autoconfigure.error` (artifact `spring-boot-webmvc`). `Boot4PugDebugErrorViewResolver` + `Boot4PugDebugErrorViewResolverAutoConfiguration` cover that path; both resolvers share their logic via the package-private `PugDebugErrorPage` helper. Exactly one auto-configuration activates per classpath (`@ConditionalOnClass` on the respective interface; the Boot 4 config guards by class *name* to avoid loading a missing type). `spring-boot-webmvc:4.0.x` is in the pom as `optional` with all transitives excluded — compile-only, no consumer exposure
 

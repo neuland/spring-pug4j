@@ -11,6 +11,7 @@ See [neuland/pug4j](https://github.com/neuland/pug4j) for more information about
 - [Requirements](#requirements)
 - [Installation](#installation)
 - [Features](#features)
+- [Spring Boot Auto-Configuration](#spring-boot-auto-configuration)
 - [Configuration](#bean-declarations)
   - [Spring XML Configuration](#spring-xml-configuration)
   - [Spring Java Configuration](#spring-java-configuration)
@@ -24,6 +25,37 @@ See [neuland/pug4j](https://github.com/neuland/pug4j) for more information about
 - Java 17+
 - Spring Framework 6.2+
 - Pug4J 3.0.0+
+
+## Spring Boot Auto-Configuration
+
+On Spring Boot (3 or 4), spring-pug4j configures itself: add the dependency, put `.pug` templates into `src/main/resources/templates/`, and return view names from your controllers — no bean configuration required.
+
+All settings live under `spring.pug4j.*` and follow the conventions you know from `spring.thymeleaf.*`:
+
+| Property | Default | Description |
+|---|---|---|
+| `spring.pug4j.enabled` | `true` | Whether to auto-configure Pug4J view resolution. |
+| `spring.pug4j.prefix` | `classpath:/templates/` | Prefix that gets prepended to view names when building a URL. |
+| `spring.pug4j.suffix` | `.pug` | Suffix that gets appended to view names when building a URL. |
+| `spring.pug4j.encoding` | `UTF-8` | Template files encoding. |
+| `spring.pug4j.cache` | `true` | Whether to enable template caching. Disable during development. |
+| `spring.pug4j.mode` | `HTML` | Output mode for templates without an explicit doctype (`HTML`, `XHTML`, `XML`). |
+| `spring.pug4j.content-type` | `text/html;charset=UTF-8` | Content-Type written to the HTTP response. |
+| `spring.pug4j.pretty-print` | `false` | Whether to pretty-print the rendered output. |
+| `spring.pug4j.check-template-location` | `true` | Whether to log a warning when the templates location does not exist. |
+| `spring.pug4j.view-names` | | View names that can be resolved (supports simple wildcards). Unset means all. |
+| `spring.pug4j.render-exceptions` | `false` | Render Pug exceptions as styled HTML error pages instead of propagating them (development only). |
+| `spring.pug4j.debug-error-page` | `false` | Render pug4j's debug error page at `/error` for Pug exceptions (development only, see below). |
+
+Every auto-configured bean backs off as soon as you define your own (`TemplateLoader`, `PugEngine`, or `PugViewResolver`), so existing manual configurations keep working unchanged. The manual bean declarations below are only needed for plain Spring MVC without Boot, or when you need settings the properties don't cover (e.g. a custom `basePath` or global render variables).
+
+Typical development setup:
+
+```properties
+spring.pug4j.cache=false
+spring.pug4j.render-exceptions=true
+spring.pug4j.debug-error-page=true
+```
 
 ## Bean Declarations
 
@@ -137,8 +169,10 @@ When running on Spring Boot, spring-pug4j can auto-configure an `ErrorViewResolv
 The page exposes template source and paths, so it is **disabled by default**. Enable it for development only:
 
 ```properties
-pug4j.spring.debug-error-page=true
+spring.pug4j.debug-error-page=true
 ```
+
+(The pre-3.5.1 property name `pug4j.spring.debug-error-page` is deprecated but still honored.)
 
 The property works on both Spring Boot 3 and Spring Boot 4. Boot 4 moved the `ErrorViewResolver` interface to `org.springframework.boot.webmvc.autoconfigure.error` (artifact `spring-boot-webmvc`); spring-pug4j ships resolvers for both locations and auto-configures the one matching your classpath — no extra setup needed.
 
@@ -342,6 +376,8 @@ public class PugConfig {
 ## Versions
 
 ### 3.5.1
+* Full Spring Boot auto-configuration: templates render from `classpath:/templates/` with zero bean configuration; all settings under `spring.pug4j.*` following `spring.thymeleaf.*` conventions (with IDE completion via configuration metadata); auto-configured beans back off when you define your own
+* Property prefix moved to `spring.pug4j.*` — the pre-3.5.1 `pug4j.spring.debug-error-page` is deprecated but still honored
 * Debug error page now works on Spring Boot 4: Boot 4 relocated the `ErrorViewResolver` interface to `org.springframework.boot.webmvc.autoconfigure.error` (artifact `spring-boot-webmvc`); spring-pug4j ships resolvers for both locations and auto-configures the one matching the classpath (no new mandatory runtime dependencies)
 * `PugView` no longer presets the response Content-Type before rendering: a propagated render error previously left `text/html` behind and broke content negotiation in the error dispatch (Spring Boot's JSON error response failed with `HttpMessageNotWritableException`)
 * Documented the Spring Security setup required for the debug error page (`dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()`)
