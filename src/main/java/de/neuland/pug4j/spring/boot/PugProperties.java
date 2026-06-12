@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 
 import de.neuland.pug4j.Pug4J.Mode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.Ordered;
 
 /**
  * Configuration properties for Pug4J view resolution.
@@ -86,6 +87,13 @@ public class PugProperties {
 	 * View names that can be resolved (supports simple wildcards). Unset means all.
 	 */
 	private String[] viewNames;
+
+	/**
+	 * Order of the Pug view resolver in the view resolver chain. Defaults to
+	 * Ordered.LOWEST_PRECEDENCE - 5 (the slot Thymeleaf uses): after the
+	 * BeanNameViewResolver, before Spring Boot's InternalResourceViewResolver.
+	 */
+	private int viewResolverOrder = Ordered.LOWEST_PRECEDENCE - 5;
 
 	public boolean isEnabled() {
 		return enabled;
@@ -189,6 +197,14 @@ public class PugProperties {
 
 	public void setViewNames(String[] viewNames) {
 		this.viewNames = viewNames;
+	}
+
+	public int getViewResolverOrder() {
+		return viewResolverOrder;
+	}
+
+	public void setViewResolverOrder(int viewResolverOrder) {
+		this.viewResolverOrder = viewResolverOrder;
 	}
 
 }

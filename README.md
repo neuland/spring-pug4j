@@ -45,6 +45,7 @@ All settings live under `spring.pug4j.*` and follow the conventions you know fro
 | `spring.pug4j.check-template-location` | `true` | Whether to log a warning when the templates location does not exist. |
 | `spring.pug4j.produce-partial-output-while-processing` | `false` | Stream output directly into the response instead of buffering the full page first. Improves time-to-first-byte for pages larger than the servlet container's response buffer — but a failing template may then deliver a partial page instead of a clean error. |
 | `spring.pug4j.view-names` | | View names that can be resolved (supports simple wildcards). Unset means all. |
+| `spring.pug4j.view-resolver-order` | `Ordered.LOWEST_PRECEDENCE - 5` | Order of the Pug view resolver in the view resolver chain (Thymeleaf's slot). Adjust when combining multiple template engines. |
 | `spring.pug4j.render-exceptions` | `false` | Render Pug exceptions as styled HTML error pages instead of propagating them (development only). |
 | `spring.pug4j.debug-error-page` | `false` | Render pug4j's debug error page at `/error` for Pug exceptions (development only, see below). |
 

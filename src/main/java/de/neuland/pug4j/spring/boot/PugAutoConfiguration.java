@@ -15,7 +15,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.Ordered;
 
 /**
  * Auto-configuration for Pug4J view resolution: with this on the classpath, a Spring Boot
@@ -78,10 +77,10 @@ public class PugAutoConfiguration {
 		if (properties.getViewNames() != null) {
 			resolver.setViewNames(properties.getViewNames());
 		}
-		// Same slot as Thymeleaf's view resolver: after the BeanNameViewResolver,
-		// before Boot's InternalResourceViewResolver. Missing templates fall through
-		// to the next resolver via PugView.checkResource().
-		resolver.setOrder(Ordered.LOWEST_PRECEDENCE - 5);
+		// Default is Thymeleaf's slot: after the BeanNameViewResolver, before Boot's
+		// InternalResourceViewResolver. Missing templates fall through to the next
+		// resolver via PugView.checkResource().
+		resolver.setOrder(properties.getViewResolverOrder());
 		return resolver;
 	}
 
