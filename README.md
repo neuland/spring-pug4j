@@ -1,4 +1,5 @@
 [![Test Status](https://github.com/neuland/spring-pug4j/actions/workflows/test.yaml/badge.svg)](https://github.com/neuland/spring-pug4j/actions)
+[![Maven Central](https://img.shields.io/maven-central/v/de.neuland-bfi/spring-pug4j)](https://central.sonatype.com/artifact/de.neuland-bfi/spring-pug4j)
 
 # Spring Integration for Pug4J
 
@@ -435,14 +436,14 @@ Add the following dependency to your `pom.xml`:
 <dependency>
   <groupId>de.neuland-bfi</groupId>
   <artifactId>spring-pug4j</artifactId>
-  <version>3.5.0</version>
+  <version>3.6.0</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```gradle
-implementation 'de.neuland-bfi:spring-pug4j:3.5.0'
+implementation 'de.neuland-bfi:spring-pug4j:3.6.0'
 ```
 
 ## Features
@@ -456,9 +457,9 @@ implementation 'de.neuland-bfi:spring-pug4j:3.5.0'
 
 ## Author
 
+- Christoph Blömer / [chbloemer](https://github.com/chbloemer)
 - Stefan Kuper / [planetk](https://github.com/planetk)
 - Michael Geers / [naltatis](https://github.com/naltatis)
-- Christoph Blömer / [chbloemer](https://github.com/chbloemer)
 
 ## License
 
