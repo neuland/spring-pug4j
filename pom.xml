@@ -311,6 +311,14 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- Generates META-INF/spring-configuration-metadata.json for IDE completion of spring.pug4j.* -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <version>${spring-boot.version}</version>
+            <optional>true</optional>
+        </dependency>
+
         <!-- Spring Boot 4 webmvc, only for compiling Boot4PugDebugErrorViewResolver against the
              relocated ErrorViewResolver interface. All transitives are excluded so the Boot 3
              compile classpath stays untouched; optional, so consumers never see it. -->

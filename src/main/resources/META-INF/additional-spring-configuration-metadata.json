@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "pug4j.spring.debug-error-page",
+      "type": "java.lang.Boolean",
+      "description": "Whether to render pug4j's debug error page at /error when a request fails with a PugException (development only - exposes template source and paths).",
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "spring.pug4j.debug-error-page",
+        "reason": "Pug4J properties moved to the spring.pug4j prefix."
+      }
+    }
+  ]
+}

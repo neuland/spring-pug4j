@@ -21,13 +21,19 @@ public class PugDebugErrorViewResolverAutoConfigurationTest {
 
     @Test
     public void shouldRegisterResolverWhenPropertyEnabled() {
+        contextRunner.withPropertyValues("spring.pug4j.debug-error-page=true").run(context ->
+                assertNotNull(context.getBean(PugDebugErrorViewResolver.class)));
+    }
+
+    @Test
+    public void shouldStillHonorDeprecatedPropertyPrefix() {
         contextRunner.withPropertyValues("pug4j.spring.debug-error-page=true").run(context ->
                 assertNotNull(context.getBean(PugDebugErrorViewResolver.class)));
     }
 
     @Test
     public void shouldStayDisabledWhenPropertyFalse() {
-        contextRunner.withPropertyValues("pug4j.spring.debug-error-page=false").run(context ->
+        contextRunner.withPropertyValues("spring.pug4j.debug-error-page=false").run(context ->
                 assertEquals(0, context.getBeansOfType(PugDebugErrorViewResolver.class).size()));
     }
 
@@ -35,7 +41,7 @@ public class PugDebugErrorViewResolverAutoConfigurationTest {
     public void shouldBackOffWhenBoot3InterfaceMissing() {
         // Simulates a Spring Boot 4 classpath: the old interface location is absent.
         contextRunner.withClassLoader(new FilteredClassLoader(ErrorViewResolver.class))
-                .withPropertyValues("pug4j.spring.debug-error-page=true")
+                .withPropertyValues("spring.pug4j.debug-error-page=true")
                 .run(context ->
                         assertEquals(0, context.getBeansOfType(PugDebugErrorViewResolver.class).size()));
     }

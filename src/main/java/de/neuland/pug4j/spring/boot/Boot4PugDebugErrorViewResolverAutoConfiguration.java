@@ -4,9 +4,9 @@ import de.neuland.pug4j.PugErrorRenderer;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 
 /**
  * Auto-configuration for {@link Boot4PugDebugErrorViewResolver} (Spring Boot 4).
@@ -18,13 +18,14 @@ import org.springframework.context.annotation.Bean;
  * because its {@code ErrorViewResolver} interface is missing.
  *
  * <p>Disabled by default — the debug error page exposes template source and paths.
- * Enable for development with {@code pug4j.spring.debug-error-page=true}.
+ * Enable for development with {@code spring.pug4j.debug-error-page=true}
+ * (the deprecated {@code pug4j.spring.debug-error-page} is still honored).
  */
 @AutoConfiguration
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass(value = PugErrorRenderer.class,
 		name = "org.springframework.boot.webmvc.autoconfigure.error.ErrorViewResolver")
-@ConditionalOnProperty(prefix = "pug4j.spring", name = "debug-error-page", havingValue = "true")
+@Conditional(PugDebugErrorPageCondition.class)
 public class Boot4PugDebugErrorViewResolverAutoConfiguration {
 
 	@Bean
