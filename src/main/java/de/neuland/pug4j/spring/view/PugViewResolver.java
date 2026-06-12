@@ -13,6 +13,7 @@ public class PugViewResolver extends AbstractTemplateViewResolver {
 	private RenderContext renderContext;
 	private Mode defaultMode = Mode.HTML;
 	private boolean renderExceptions = false;
+	private boolean producePartialOutputWhileProcessing = false;
 	private String contentType = "text/html;charset=UTF-8";
 
 	public PugViewResolver() {
@@ -34,6 +35,7 @@ public class PugViewResolver extends AbstractTemplateViewResolver {
 		view.setRenderContext(obtainRenderContext());
 		view.setContentType(contentType);
 		view.setRenderExceptions(renderExceptions);
+		view.setProducePartialOutputWhileProcessing(producePartialOutputWhileProcessing);
 		return view;
 	}
 
@@ -80,6 +82,20 @@ public class PugViewResolver extends AbstractTemplateViewResolver {
 
 	public void setRenderExceptions(boolean renderExceptions) {
 		this.renderExceptions = renderExceptions;
+	}
+
+	public boolean isProducePartialOutputWhileProcessing() {
+		return producePartialOutputWhileProcessing;
+	}
+
+	/**
+	 * Streams output directly into the response instead of buffering the fully rendered
+	 * page first. Improves time-to-first-byte for pages larger than the servlet
+	 * container's response buffer, at the cost that a failing template may deliver a
+	 * partial page. Defaults to {@code false} (buffered).
+	 */
+	public void setProducePartialOutputWhileProcessing(boolean producePartialOutputWhileProcessing) {
+		this.producePartialOutputWhileProcessing = producePartialOutputWhileProcessing;
 	}
 
 	public String getContentType() {

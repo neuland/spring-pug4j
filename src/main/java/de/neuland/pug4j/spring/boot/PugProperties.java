@@ -62,6 +62,14 @@ public class PugProperties {
 	private boolean prettyPrint = false;
 
 	/**
+	 * Whether to stream output directly into the response instead of buffering the
+	 * fully rendered page first. Improves time-to-first-byte for pages larger than
+	 * the servlet container's response buffer, at the cost that a failing template
+	 * may deliver a partial page.
+	 */
+	private boolean producePartialOutputWhileProcessing = false;
+
+	/**
 	 * Whether to render Pug exceptions as styled HTML error pages instead of
 	 * propagating them (development only).
 	 */
@@ -148,6 +156,14 @@ public class PugProperties {
 
 	public void setPrettyPrint(boolean prettyPrint) {
 		this.prettyPrint = prettyPrint;
+	}
+
+	public boolean isProducePartialOutputWhileProcessing() {
+		return producePartialOutputWhileProcessing;
+	}
+
+	public void setProducePartialOutputWhileProcessing(boolean producePartialOutputWhileProcessing) {
+		this.producePartialOutputWhileProcessing = producePartialOutputWhileProcessing;
 	}
 
 	public boolean isRenderExceptions() {

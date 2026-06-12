@@ -70,6 +70,7 @@ public class PugAutoConfiguration {
 				.build());
 		resolver.setContentType(properties.getContentType());
 		resolver.setRenderExceptions(properties.isRenderExceptions());
+		resolver.setProducePartialOutputWhileProcessing(properties.isProducePartialOutputWhileProcessing());
 		if (properties.getViewNames() != null) {
 			resolver.setViewNames(properties.getViewNames());
 		}

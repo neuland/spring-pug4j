@@ -50,12 +50,15 @@ public class PugAutoConfigurationTest {
                 "spring.pug4j.encoding=ISO-8859-1",
                 "spring.pug4j.content-type=application/xhtml+xml",
                 "spring.pug4j.cache=false",
-                "spring.pug4j.mode=XHTML"
+                "spring.pug4j.mode=XHTML",
+                "spring.pug4j.produce-partial-output-while-processing=true"
         ).run(context -> {
             SpringTemplateLoader loader = context.getBean(SpringTemplateLoader.class);
             assertEquals("jade", loader.getExtension());
             assertEquals("ISO-8859-1", loader.getEncoding());
-            assertEquals("application/xhtml+xml", context.getBean(PugViewResolver.class).getContentType());
+            PugViewResolver resolver = context.getBean(PugViewResolver.class);
+            assertEquals("application/xhtml+xml", resolver.getContentType());
+            assertTrue(resolver.isProducePartialOutputWhileProcessing());
         });
     }
 

@@ -75,6 +75,7 @@ The library consists of three core components that integrate Spring MVC with Pug
   - Merging Spring MVC model data with the template
   - Rendering into a `StringWriter` buffer first, so render errors never deliver partial pages
   - Writing the buffered HTML to the HTTP response on success
+  - Optional streaming mode (`producePartialOutputWhileProcessing`, default off): renders directly into the response writer for faster time-to-first-byte on large pages. Template loading/parsing errors still leave the response untouched (they occur before the first byte), but a mid-render failure leaves a partial page behind
   - Setting the response Content-Type only when actually writing (overrides `applyContentType` as no-op): a propagated render exception must not leave a preset Content-Type behind, or content negotiation in the error dispatch breaks (e.g. Spring Boot's JSON error response fails with `HttpMessageNotWritableException`)
 - Features a development-friendly exception rendering mode (`renderExceptions`):
   - When enabled, catches `PugException` and renders the styled error page via `PugErrorRenderer.renderHtml()`
@@ -82,7 +83,7 @@ The library consists of three core components that integrate Spring MVC with Pug
 
 ### 4. PugAutoConfiguration (`de.neuland.pug4j.spring.boot.PugAutoConfiguration`)
 - Full Spring Boot auto-configuration (Boot 3 and 4): registers `SpringTemplateLoader`, `PugEngine`, and `PugViewResolver` with zero manual bean configuration
-- All settings under `spring.pug4j.*` (`PugProperties`), names mirroring `spring.thymeleaf.*`: `prefix`, `suffix`, `encoding`, `cache`, `mode`, `content-type`, `pretty-print`, `check-template-location`, `view-names`, plus pug-specific `render-exceptions` and `debug-error-page`
+- All settings under `spring.pug4j.*` (`PugProperties`), names mirroring `spring.thymeleaf.*`: `prefix`, `suffix`, `encoding`, `cache`, `mode`, `content-type`, `pretty-print`, `check-template-location`, `view-names`, `produce-partial-output-while-processing`, plus pug-specific `render-exceptions` and `debug-error-page`
 - Every bean is `@ConditionalOnMissingBean` (loader on `TemplateLoader`, engine on `PugEngine`, resolver on `PugViewResolver`), so manual configurations win; `spring.pug4j.enabled=false` disables everything
 - View resolver order is `LOWEST_PRECEDENCE - 5` (Thymeleaf's slot); missing templates fall through to other resolvers via `PugView.checkResource()`
 - `spring-boot-configuration-processor` (optional) generates metadata for IDE completion; `additional-spring-configuration-metadata.json` marks the legacy `pug4j.spring.debug-error-page` deprecated

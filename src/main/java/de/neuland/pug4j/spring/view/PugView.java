@@ -30,23 +30,27 @@ public class PugView extends AbstractTemplateView {
 	private PugEngine engine;
 	private RenderContext renderContext;
 	private boolean renderExceptions = false;
+	private boolean producePartialOutputWhileProcessing = false;
 	private String contentType;
 
 	@Override
 	protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		doRender(model, response);
+		logger.trace("Rendering Pug template [" + getUrl() + "] in PugView '" + getBeanName() + "'");
+		if (producePartialOutputWhileProcessing) {
+			renderStreaming(model, response);
+		} else {
+			renderBuffered(model, response);
+		}
 	}
 
 	@Override
 	protected void applyContentType(HttpServletResponse response) {
-		// Deferred to writeHtml(): a propagated render exception must not leave a preset
-		// Content-Type behind — it breaks content negotiation in the error dispatch
+		// Deferred until output is written: a propagated render exception must not leave a
+		// preset Content-Type behind — it breaks content negotiation in the error dispatch
 		// (e.g. Spring Boot's JSON error response fails with HttpMessageNotWritableException).
 	}
 
-	private void doRender(Map<String, Object> model, HttpServletResponse response) throws Exception {
-		logger.trace("Rendering Pug template [" + getUrl() + "] in PugView '" + getBeanName() + "'");
-
+	private void renderBuffered(Map<String, Object> model, HttpServletResponse response) throws Exception {
 		// Render into a buffer first so a failing template never sends a partial page.
 		StringWriter buffer = new StringWriter();
 		try {
@@ -67,6 +71,47 @@ public class PugView extends AbstractTemplateView {
 			throw e;
 		}
 		writeHtml(response, buffer.toString());
+	}
+
+	/**
+	 * Streams output directly into the response for a faster time-to-first-byte on large
+	 * pages. Template loading and parsing happen before the first byte is written, so those
+	 * errors are still handled cleanly — but a failure while rendering can leave a partial
+	 * page (and a committed response) behind. That is the inherent trade-off of streaming.
+	 */
+	private void renderStreaming(Map<String, Object> model, HttpServletResponse response) throws Exception {
+		PugTemplate template;
+		try {
+			template = getTemplate();
+		} catch (PugException e) {
+			if (renderExceptions) {
+				logger.error("failed to render template [" + getUrl() + "]", e);
+				writeHtml(response, PugErrorRenderer.renderHtml(e));
+				return;
+			}
+			throw e;
+		} catch (IOException e) {
+			if (renderExceptions) {
+				logger.error("could not find template [" + getUrl() + "]", e);
+				writeHtml(response, "<pre>could not find template: " + getUrl() + "</pre>");
+				return;
+			}
+			throw e;
+		}
+
+		if (contentType != null) {
+			response.setContentType(contentType);
+		}
+		try {
+			engine.render(template, model, getRenderContext(), response.getWriter());
+		} catch (PugException e) {
+			if (renderExceptions) {
+				logger.error("failed to render template [" + getUrl() + "]", e);
+				response.getWriter().write(PugErrorRenderer.renderHtml(e));
+				return;
+			}
+			throw e;
+		}
 	}
 
 	private void writeHtml(HttpServletResponse response, String html) throws IOException {
@@ -120,6 +165,20 @@ public class PugView extends AbstractTemplateView {
 
 	public void setRenderExceptions(boolean renderExceptions) {
 		this.renderExceptions = renderExceptions;
+	}
+
+	public boolean isProducePartialOutputWhileProcessing() {
+		return producePartialOutputWhileProcessing;
+	}
+
+	/**
+	 * Streams output directly into the response instead of buffering the fully rendered
+	 * page first. Improves time-to-first-byte for pages larger than the servlet
+	 * container's response buffer, at the cost that a failing template may deliver a
+	 * partial page. Defaults to {@code false} (buffered).
+	 */
+	public void setProducePartialOutputWhileProcessing(boolean producePartialOutputWhileProcessing) {
+		this.producePartialOutputWhileProcessing = producePartialOutputWhileProcessing;
 	}
 
 	public String getContentType() {

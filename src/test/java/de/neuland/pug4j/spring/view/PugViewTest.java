@@ -153,4 +153,62 @@ public class PugViewTest {
         assertEquals("text/html;charset=UTF-8", response.getContentType());
         assertEquals("<input checked>", response.getContentAsString().trim());
     }
+
+    @Test
+    public void shouldStreamOutputWhenPartialOutputEnabled() throws Exception {
+        PugView view = view("mode");
+        view.setProducePartialOutputWhileProcessing(true);
+        view.setContentType("text/html;charset=UTF-8");
+
+        view.renderMergedTemplateModel(model, request, response);
+
+        assertEquals("<input checked>", response.getContentAsString().trim());
+        assertEquals("text/html;charset=UTF-8", response.getContentType());
+    }
+
+    @Test
+    public void shouldStreamPartialOutputBeforeRenderFailure() throws Exception {
+        PugView view = view("broken");
+        view.setProducePartialOutputWhileProcessing(true);
+        view.setContentType("text/html;charset=UTF-8");
+        view.setRenderExceptions(false);
+
+        try {
+            view.renderMergedTemplateModel(model, request, response);
+            fail("expected PugException");
+        } catch (PugException expected) {
+            // streaming trade-off: output before the failing node is already written
+            assertTrue("partial output should be streamed",
+                    response.getContentAsString().contains("<h1>before</h1>"));
+        }
+    }
+
+    @Test
+    public void shouldAppendErrorPageToPartialOutputWhenStreamingWithRenderExceptions() throws Exception {
+        PugView view = view("broken");
+        view.setProducePartialOutputWhileProcessing(true);
+        view.setRenderExceptions(true);
+
+        view.renderMergedTemplateModel(model, request, response);
+
+        String content = response.getContentAsString();
+        assertTrue("error page should mention the failing mixin", content.contains("unknownMixin"));
+    }
+
+    @Test
+    public void shouldNotTouchResponseWhenTemplateMissingInStreamingMode() throws Exception {
+        // Loading and parsing happen before the first byte: those errors stay clean.
+        PugView view = view("does-not-exist");
+        view.setProducePartialOutputWhileProcessing(true);
+        view.setContentType("text/html;charset=UTF-8");
+        view.setRenderExceptions(false);
+
+        try {
+            view.renderMergedTemplateModel(model, request, response);
+            fail("expected exception for missing template");
+        } catch (Exception expected) {
+            assertNull(response.getContentType());
+            assertEquals("", response.getContentAsString());
+        }
+    }
 }
