@@ -86,6 +86,8 @@
         <mockito-core.version>5.6.0</mockito-core.version>
         <pug4j.version>3.0.0</pug4j.version>
         <spring-boot.version>3.4.1</spring-boot.version>
+        <!-- Spring Boot 4 relocated ErrorViewResolver; jar used compile-only (all transitives excluded) -->
+        <spring-boot-webmvc.version>4.0.7</spring-boot-webmvc.version>
         <assertj.version>3.26.3</assertj.version>
         <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
         <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
@@ -307,6 +309,22 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
             <version>${spring-boot.version}</version>
             <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Boot 4 webmvc, only for compiling Boot4PugDebugErrorViewResolver against the
+             relocated ErrorViewResolver interface. All transitives are excluded so the Boot 3
+             compile classpath stays untouched; optional, so consumers never see it. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-webmvc</artifactId>
+            <version>${spring-boot-webmvc.version}</version>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

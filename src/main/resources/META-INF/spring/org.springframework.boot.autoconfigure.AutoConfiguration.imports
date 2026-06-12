@@ -1,1 +1,2 @@
 de.neuland.pug4j.spring.boot.PugDebugErrorViewResolverAutoConfiguration
+de.neuland.pug4j.spring.boot.Boot4PugDebugErrorViewResolverAutoConfiguration
