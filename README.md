@@ -25,7 +25,7 @@ See [neuland/pug4j](https://github.com/neuland/pug4j) for more information about
 
 - Java 17+
 - Spring Framework 6.2+
-- Pug4J 3.0.0+
+- Pug4J 3.1.0+
 
 ## Spring Boot Auto-Configuration
 
@@ -378,6 +378,9 @@ public class PugConfig {
 
 ## Versions
 
+### 3.7.0
+* Updated to pug4j 3.1.0
+
 ### 3.6.0
 * Optional streaming output (`spring.pug4j.produce-partial-output-while-processing=true`, or `setProducePartialOutputWhileProcessing` on the resolver) for faster time-to-first-byte on large pages; default stays buffered so failing templates never deliver partial pages
 * Full Spring Boot auto-configuration: templates render from `classpath:/templates/` with zero bean configuration; all settings under `spring.pug4j.*` following `spring.thymeleaf.*` conventions (with IDE completion via configuration metadata); auto-configured beans back off when you define your own (for the view resolver also via the conventional bean names `viewResolver`/`pugViewResolver`, so beans declared with a supertype return type are recognized); resolver position configurable via `spring.pug4j.view-resolver-order`
@@ -436,14 +439,14 @@ Add the following dependency to your `pom.xml`:
 <dependency>
   <groupId>de.neuland-bfi</groupId>
   <artifactId>spring-pug4j</artifactId>
-  <version>3.6.0</version>
+  <version>3.7.0</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```gradle
-implementation 'de.neuland-bfi:spring-pug4j:3.6.0'
+implementation 'de.neuland-bfi:spring-pug4j:3.7.0'
 ```
 
 ## Features

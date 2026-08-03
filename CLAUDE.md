@@ -10,7 +10,7 @@ Spring-pug4j is a Spring Framework integration library for Pug4J (formerly Jade4
 - Current version: 3.6.0-SNAPSHOT
 - Requires Java 17+
 - Spring Framework 6.2+ (Jakarta EE with jakarta.servlet-api 6.0)
-- Pug4J 3.0.0+ (using new `PugEngine` and `RenderContext` APIs)
+- Pug4J 3.1.0+ (using new `PugEngine` and `RenderContext` APIs)
 - Build tool: Maven
 - Testing: JUnit 4, Mockito
 
