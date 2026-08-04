@@ -84,7 +84,7 @@
         <commons-lang3.version>3.20.0</commons-lang3.version>
         <junit.version>4.13.2</junit.version>
         <mockito-core.version>5.6.0</mockito-core.version>
-        <pug4j.version>3.1.0</pug4j.version>
+        <pug4j.version>3.1.1</pug4j.version>
         <spring-boot.version>3.4.1</spring-boot.version>
         <!-- Spring Boot 4 relocated ErrorViewResolver; jar used compile-only (all transitives excluded) -->
         <spring-boot-webmvc.version>4.0.7</spring-boot-webmvc.version>

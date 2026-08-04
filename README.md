@@ -25,7 +25,7 @@ See [neuland/pug4j](https://github.com/neuland/pug4j) for more information about
 
 - Java 17+
 - Spring Framework 6.2+
-- Pug4J 3.1.0+
+- Pug4J 3.1.1+
 
 ## Spring Boot Auto-Configuration
 
@@ -378,6 +378,9 @@ public class PugConfig {
 
 ## Versions
 
+### 3.7.1
+* Updated to pug4j 3.1.1
+
 ### 3.7.0
 * Updated to pug4j 3.1.0
 
@@ -439,14 +442,14 @@ Add the following dependency to your `pom.xml`:
 <dependency>
   <groupId>de.neuland-bfi</groupId>
   <artifactId>spring-pug4j</artifactId>
-  <version>3.7.0</version>
+  <version>3.7.1</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```gradle
-implementation 'de.neuland-bfi:spring-pug4j:3.7.0'
+implementation 'de.neuland-bfi:spring-pug4j:3.7.1'
 ```
 
 ## Features

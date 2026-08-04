@@ -7,10 +7,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Spring-pug4j is a Spring Framework integration library for Pug4J (formerly Jade4J), providing Spring MVC view resolution for Pug templates. The library acts as a bridge between Spring's view resolution mechanism and the Pug templating engine.
 
 **Key Details:**
-- Current version: 3.6.0-SNAPSHOT
+- Current version: 3.7.1-SNAPSHOT
 - Requires Java 17+
 - Spring Framework 6.2+ (Jakarta EE with jakarta.servlet-api 6.0)
-- Pug4J 3.1.0+ (using new `PugEngine` and `RenderContext` APIs)
+- Pug4J 3.1.1+ (using new `PugEngine` and `RenderContext` APIs)
 - Build tool: Maven
 - Testing: JUnit 4, Mockito
 
